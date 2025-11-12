@@ -1,9 +1,10 @@
 package com.example.practicsing.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow // LazyRow 사용
-import androidx.compose.foundation.lazy.items // LazyRow의 items 확장 함수 사용을 위해 추가
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items // LazyRow의 items 확장 함수 사용을 위해 필수 Import
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -15,33 +16,38 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.draw.clip
+
+// ⭐ RecordVoiceOver 아이콘 사용을 위한 필수 Import
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RecordVoiceOver
+
 import androidx.compose.ui.text.font.FontWeight
+// ⭐ viewModel() 함수 사용을 위한 필수 Import
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 // ===================================================
-// ** 경로 수정 **
+// 테마 및 공통 컴포넌트 Import (프로젝트 구조: main.theme, ui.common 사용)
 import com.example.practicsing.main.theme.BasePink
 import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.MainText
 import com.example.practicsing.main.theme.PinkAccent
 import com.example.practicsing.main.theme.Gray
 import com.example.practicsing.main.theme.LightPink
+import com.example.practicsing.main.theme.Typography // 정의된 커스텀 Typography 사용
 
 import com.example.practicsing.ui.common.TabButton
 import com.example.practicsing.ui.common.SongCard
 import com.example.practicsing.ui.common.RankCard
 
-import com.example.practicsing.data.model.Song // SongList 인자 타입 경로
-import com.example.practicsing.data.model.Rank // RankList 인자 타입 경로
-import com.example.practicsing.presentation.home.HomeViewModel // ViewModel 경로 (ui.home이 아닌 presentation.home에 있다고 가정)
+// 데이터 모델 및 ViewModel Import (클린 아키텍처 구조 가정)
+import com.example.practicsing.data.model.Song
+import com.example.practicsing.data.model.Rank
+import com.example.practicsing.presentation.home.HomeViewModel
 // ===================================================
-
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
-    // ViewModel의 상태를 수집
+    // ViewModel의 상태를 수집 (StateFlow를 관찰)
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
@@ -54,16 +60,14 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // ... (Header 및 Daily Practice Box 코드는 동일) ...
         // --- 1. Header ---
         Text(
             "Home",
             color = MainText,
-            fontSize = 24.sp,
             modifier = Modifier
                 .align(Alignment.Start)
-                .padding(15.dp),
-            style = MaterialTheme.typography.headlineSmall
+                .padding(horizontal = 4.dp),
+            style = Typography.headlineSmall // 24sp, Bold
         )
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -80,22 +84,40 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                 ),
             contentAlignment = Alignment.TopCenter
         ){
-            // Daily Practice Box 내부 콘텐츠 (생략)
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Spacer(modifier = Modifier.height(15.dp))
+                // ⭐ RecordVoiceOver 아이콘 사용
                 Icon(Icons.Filled.RecordVoiceOver, contentDescription = "Daily Practice", tint = MainText, modifier = Modifier.size(50.dp))
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Elevate Your Voice Daily", color = MainText, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+
+                // Typography 사용: 인삿말 title (headlineMedium)
+                Text(
+                    text = "Elevate Your Voice Daily",
+                    color = MainText,
+                    style = Typography.headlineMedium
+                )
                 Spacer(modifier = Modifier.height(2.dp))
-                Text(text = "Just for 3 minutes", color = Gray, fontSize = 12.sp)
+
+                // Typography 사용: 작은 알림 (labelSmall)
+                Text(
+                    text = "Just for 3 minutes",
+                    color = Gray,
+                    style = Typography.labelSmall
+                )
                 Spacer(modifier = Modifier.height(2.dp))
+
                 Button(
                     onClick = { /* TODO: navigate to Pract Screen */ },
                     colors = ButtonDefaults.buttonColors(containerColor = PinkAccent),
                     shape = RoundedCornerShape(50),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
                 ) {
-                    Text("Start Daily Practice", color = MainText)
+                    // Typography 사용: CTA (titleMedium)
+                    Text(
+                        "Start Daily Practice",
+                        color = MainText,
+                        style = Typography.titleMedium
+                    )
                 }
             }
         }
@@ -105,8 +127,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
         Text(
             text = "HOT SONGS",
             color = MainText,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
+            style = Typography.bodyLarge, // 16sp Medium (혹은 별도 정의된 스타일 사용)
             modifier = Modifier.align(Alignment.Start)
         )
         Spacer(modifier = Modifier.height(6.dp))
@@ -135,8 +156,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
         Text(
             text = "RANK",
             color = MainText,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
+            style = Typography.bodyLarge, // 16sp Medium (혹은 별도 정의된 스타일 사용)
             modifier = Modifier.align(Alignment.Start)
         )
         Spacer(modifier = Modifier.height(6.dp))
@@ -165,14 +185,15 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 }
 
 // -------------------------------------------------------------
-// * List Composable (Song/Rank 모델 경로 수정)
+// * List Composable (LazyRow/Column 사용 시 Import 경로 유의)
 // -------------------------------------------------------------
 
 @Composable
 fun SongList(songs: List<Song>) { // data.model.Song 타입 사용
-    LazyRow( // LazyRow 사용
+    LazyRow(
         modifier = Modifier.fillMaxWidth()
     ) {
+        // items() 확장 함수는 androidx.compose.foundation.lazy.items import 필요
         items(songs) { song ->
             SongCard(song)
         }
