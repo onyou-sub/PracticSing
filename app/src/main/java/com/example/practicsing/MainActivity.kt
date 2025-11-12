@@ -10,6 +10,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.practicsing.ui.LoginScreen
+import com.example.practicsing.ui.RegisterScreen
 import com.example.practicsing.ui.theme.PracticSingTheme
 
 class MainActivity : ComponentActivity() {
@@ -31,7 +33,9 @@ class MainActivity : ComponentActivity() {
                         onRegisterClick = { currentScreen = Screen.REGISTER }
                     )
                     Screen.LOGIN -> LoginScreen(onLoginSuccess = { currentScreen = Screen.HOME })
-                    Screen.REGISTER -> RegisterScreen(onRegistrationSuccess = { currentScreen = Screen.HOME })
+                    Screen.REGISTER -> RegisterScreen(onRegistrationSuccess = {
+                        currentScreen = Screen.HOME
+                    })
                 }
             }
         }
