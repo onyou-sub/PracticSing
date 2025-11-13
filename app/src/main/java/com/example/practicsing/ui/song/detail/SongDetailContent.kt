@@ -1,4 +1,4 @@
-package com.example.practicsing.ui.common
+package com.example.practicsing.ui.song.detail
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.practicsing.R
 
 @Composable
 fun SongDetailContent(
@@ -140,6 +141,6 @@ fun SampleSongDetail() = SongDetailUiModel(
     isHot = true,
     participants = 306,
     level = "Easy",
-    albumImage = com.example.practicsing.R.drawable.sample_album,
+    albumImage = R.drawable.sample_album,
     description = "A heartfelt song that helps you practice emotional tone."
 )

@@ -14,8 +14,8 @@ import androidx.navigation.NavType
 // ⚠️ 주의: 이 경로에 실제 컴포넌트가 존재해야 합니다!
 import com.example.practicsing.ui.splash.SplashScreen
 import com.example.practicsing.ui.auth.LoginScreen
-import com.example.practicsing.ui.song.SongDetailScreen
-import com.example.practicsing.ui.song.SongPracticeScreen
+import com.example.practicsing.ui.song.detail.SongDetailScreen
+import com.example.practicsing.ui.song.practice.SongPracticeScreen
 import com.example.practicsing.ui.search.SearchScreen
 
 @Composable
