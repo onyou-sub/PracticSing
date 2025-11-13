@@ -1,5 +1,6 @@
-package com.example.practicsing.main
+package com.example.practicsing.ui.auth
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,22 +10,25 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.*
+import androidx.navigation.NavController
+import com.example.practicsing.R
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import com.example.practicsing.navigation.Screen
+
 
 
 @Composable
-fun LoginScreen(
-    onLoginSuccess: () -> Unit = {},
-    onSignUpClick: () -> Unit = {}
-) {
+fun LoginScreen2(navController: NavController)
+{
     var userId by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -44,10 +48,10 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             // Emoji Logo
-            Text(
-                text = "🎵",
-                fontSize = 56.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "PracticSing Logo",
+                modifier = Modifier.size(53.dp)
             )
 
             // App Title
@@ -159,7 +163,7 @@ fun LoginScreen(
                         isLoading = false
                         if (isValid) {
                             errorMessage = null
-                            onLoginSuccess()
+
                         } else {
                             errorMessage = "* Invalid username or password. Please try again."
                         }
@@ -189,7 +193,7 @@ fun LoginScreen(
                 textDecoration = TextDecoration.Underline,
                 fontSize = 17.sp,
                 modifier = Modifier
-                    .clickable { onSignUpClick() }
+                    .clickable { navController.navigate(com.example.practicsing.navigation.Screen.Register.route) }
                     .padding(top = 6.dp)
             )
         }

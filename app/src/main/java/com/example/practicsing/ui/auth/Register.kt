@@ -1,4 +1,4 @@
-package com.example.practicsing.main
+package com.example.practicsing.ui.auth
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
@@ -19,6 +19,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.*
+import androidx.navigation.NavHostController
+import com.example.practicsing.navigation.TopBar
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -62,10 +64,7 @@ suspend fun registerUser(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(
-    onRegistrationSuccess: () -> Unit = {},
-    onLoginClick: () -> Unit = {}
-) {
+fun RegisterScreen (navController: NavHostController) {
     var userId by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
@@ -393,7 +392,7 @@ fun RegisterScreen(
                                         )
                                         isLoading = false
                                         if (success) {
-                                            onRegistrationSuccess()
+
                                         } else {
                                             errorMessage3 = "* Registration failed. Please try again."
                                         }

@@ -1,4 +1,4 @@
-package com.example.practicsing.main
+package com.example.practicsing.navigation
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
