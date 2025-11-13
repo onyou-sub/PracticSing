@@ -41,12 +41,36 @@ android {
 
 dependencies {
     // ⚠️ Version Catalog 오류 회피: libs. 대신 직접 문자열 지정 또는 최신 버전 사용
+    
+
 
     // Core Android & Kotlin
     implementation("androidx.core:core-ktx:1.13.1") // libs.androidx.core.ktx 대체
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0") // libs.androidx.lifecycle.runtime.ktx 대체
+    implementation(libs.androidx.core.ktx)
+    implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation ("com.google.firebase:firebase-firestore")
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.animation.core)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.core:core-ktx:1.13.1")
 
-    // Compose Main Stack (Compose BOM 사용으로 버전 통합)
     val composeBom = platform("androidx.compose:compose-bom:2024.04.00") // 최신 BOM 사용
     implementation(composeBom)
 
