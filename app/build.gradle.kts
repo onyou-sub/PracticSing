@@ -78,4 +78,10 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // UI Tooling (Preview) - 프리뷰 화면 렌더링을 위해 필요
+    debugImplementation("androidx.compose.ui:ui-tooling-preview")
+
+    // 선택 사항: Live Literal 및 기타 디버깅 기능을 위해 필요
+    debugImplementation("androidx.compose.ui:ui-tooling")
 }
