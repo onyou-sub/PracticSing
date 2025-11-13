@@ -58,7 +58,7 @@ fun SplashScreen(navController: NavController) {
 
             // 로고 (VectorDrawable 또는 PNG)
             Image(
-                painter = painterResource(id = R.drawable.ic_logo_mic), // res/drawable/ic_logo_mic.xml 가정
+                painter = painterResource(id = R.drawable.logo), // res/drawable/ic_logo_mic.xml 가정
                 contentDescription = "PractiSing Logo",
                 modifier = Modifier.size(80.dp)
             )

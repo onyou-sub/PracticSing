@@ -1,5 +1,6 @@
 package com.example.practicsing.navigation
 
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -7,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.example.practicsing.presentation.splash.SplashScreen // ⭐ 새로 정의한 Splash Screen
 import androidx.compose.ui.Modifier // Modifiers 사용 시 필요 (Box, Text 등 임시 컴포넌트 포함 시)
 import androidx.compose.foundation.layout.fillMaxSize // fillMaxSize 사용 시 필요
+import androidx.navigation.NavController
 
 @Composable
 fun AppNavHost(navController: NavHostController) {

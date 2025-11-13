@@ -6,8 +6,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.practicsing.ui.home.HomeScreen
 import com.example.practicsing.ui.song.SongScreen
-import com.example.practicsing.ui.rank.RankScreen // RankScreen Import
+//import com.example.practicsing.ui.rank.RankScreen // RankScreen Import
 import com.example.practicsing.ui.my.MyScreen
+
+
 
 @Composable
 fun BottomNavGraph(navController: NavHostController) {
@@ -20,4 +22,9 @@ fun BottomNavGraph(navController: NavHostController) {
         composable(Screen.Rank.route) { RankScreen() }
         composable(Screen.My.route) { MyScreen() }
     }
+}
+
+@Composable
+fun RankScreen() {
+    TODO("Not yet implemented")
 }

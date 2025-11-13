@@ -7,7 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.Scaffold
 import androidx.navigation.compose.rememberNavController
 import com.example.practicsing.navigation.BottomNavigationBar
-import com.example.practicsing.navigation.NavGraph
+import com.example.practicsing.navigation.AppNavHost
 import com.example.practicsing.main.theme.PracticSingTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     bottomBar = { BottomNavigationBar(navController) }
                 ) {
-                    NavGraph(navController = navController)
+                    AppNavHost(navController = navController)
                 }
             }
         }
