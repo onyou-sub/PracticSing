@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
+
 }
 
 android {
@@ -108,4 +110,6 @@ dependencies {
 
     // 선택 사항: Live Literal 및 기타 디버깅 기능을 위해 필요
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+
 }

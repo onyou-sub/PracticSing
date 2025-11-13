@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.practicsing.R
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
@@ -27,8 +28,7 @@ import com.example.practicsing.navigation.Screen
 
 
 @Composable
-fun LoginScreen2(navController: NavController)
-{
+fun LoginScreen2(navController: NavHostController) {
     var userId by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -163,8 +163,9 @@ fun LoginScreen2(navController: NavController)
                         isLoading = false
                         if (isValid) {
                             errorMessage = null
-
-                        } else {
+                            navController.navigate(Screen.Main.route) {
+                                popUpTo(Screen.Login.route) { inclusive = true }}}
+                        else {
                             errorMessage = "* Invalid username or password. Please try again."
                         }
                     }
@@ -193,7 +194,7 @@ fun LoginScreen2(navController: NavController)
                 textDecoration = TextDecoration.Underline,
                 fontSize = 17.sp,
                 modifier = Modifier
-                    .clickable { navController.navigate(com.example.practicsing.navigation.Screen.Register.route) }
+                    .clickable { navController.navigate(Screen.Register.route) }
                     .padding(top = 6.dp)
             )
         }
