@@ -27,13 +27,13 @@ import com.example.practicsing.navigation.Screen
 import com.example.practicsing.main.theme.MainText
 import com.example.practicsing.main.theme.PinkAccent
 import com.example.practicsing.main.theme.Gray
-// 어두운 배경과 필드 배경색은 Theme에서 가져오지 않고 임의로 설정합니다.
+
 private val DarkBackground = Color(0xFF000000)
 private val FieldBackground = Color(0xFF1C1C1C)
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
-    // ⚠️ TODO: 실제 View Model과 상태 관리를 연결해야 합니다.
+
     var idInput by remember { mutableStateOf("") }
     var passwordInput by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
@@ -42,17 +42,16 @@ fun LoginScreen(navController: NavHostController) {
     val attemptLogin = {
         if (idInput.isNotBlank() && passwordInput.length >= 8) {
             loginError = null
-            // 로그인 성공 시 메인 화면으로 이동
             navController.navigate(Screen.Main.route) {
                 popUpTo(Screen.Splash.route) { inclusive = true }
             }
         } else {
-            loginError = "아이디와 비밀번호를 확인해주세요."
+            loginError = "Please check ID and Password."
         }
     }
 
     Scaffold(
-        containerColor = DarkBackground // 전체 배경을 검은색으로 설정
+        containerColor = DarkBackground
     ) { padding ->
         Column(
             modifier = Modifier
@@ -82,64 +81,57 @@ fun LoginScreen(navController: NavHostController) {
                 fontWeight = FontWeight.Bold,
                 color = MainText
             )
+
             Spacer(modifier = Modifier.height(64.dp))
 
-            // --- 1. ID 입력 필드 ---
+            // --- ID ---
             Text("ID", modifier = Modifier.fillMaxWidth(), color = Gray, fontSize = 14.sp)
             Spacer(modifier = Modifier.height(4.dp))
+
             OutlinedTextField(
                 value = idInput,
                 onValueChange = {
                     idInput = it
                     loginError = null
                 },
-                placeholder = { Text("6-12 characters, letters and numbers", color = Gray.copy(alpha = 0.6f)) },
+                placeholder = { Text("6-12 characters, letters and numbers") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PinkAccent,
-                    unfocusedBorderColor = FieldBackground,
-                    cursorColor = PinkAccent,
-                    focusedTextColor = MainText,
-                    unfocusedTextColor = MainText,
-                    containerColor = FieldBackground
-                ),
                 shape = RoundedCornerShape(8.dp)
             )
+
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- 2. Password 입력 필드 ---
+            // --- Password ---
             Text("Password", modifier = Modifier.fillMaxWidth(), color = Gray, fontSize = 14.sp)
             Spacer(modifier = Modifier.height(4.dp))
+
             OutlinedTextField(
                 value = passwordInput,
                 onValueChange = {
                     passwordInput = it
                     loginError = null
                 },
-                placeholder = { Text("8+ characters, including number", color = Gray.copy(alpha = 0.6f)) },
+                placeholder = { Text("8+ characters, including number") },
                 singleLine = true,
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                visualTransformation =
+                    if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
-                    val image = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                     IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                        Icon(imageVector = image, contentDescription = "Toggle password visibility", tint = Gray)
+                        Icon(
+                            imageVector = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = "toggle password",
+                            tint = Gray
+                        )
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PinkAccent,
-                    unfocusedBorderColor = FieldBackground,
-                    cursorColor = PinkAccent,
-                    focusedTextColor = MainText,
-                    unfocusedTextColor = MainText,
-                    containerColor = FieldBackground
-                ),
                 shape = RoundedCornerShape(8.dp)
             )
 
-            // --- 3. 로그인 오류 메시지 ---
             Spacer(modifier = Modifier.height(8.dp))
+
+            // 오류 메시지
             AnimatedVisibility(visible = loginError != null) {
                 Text(
                     text = loginError ?: "",
@@ -148,32 +140,27 @@ fun LoginScreen(navController: NavHostController) {
                     modifier = Modifier.fillMaxWidth()
                 )
             }
+
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- 4. 로그인 버튼 ---
+            // 로그인 버튼
             Button(
                 onClick = attemptLogin,
                 enabled = idInput.isNotBlank() && passwordInput.length >= 8,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PinkAccent,
-                    disabledContainerColor = FieldBackground.copy(alpha = 0.5f)
-                ),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Login", color = MainText, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(text = "Login", fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
 
-            // --- 5. 회원가입 링크 ---
             Spacer(modifier = Modifier.height(24.dp))
+
             Text(
                 text = "Click here to sign up",
                 color = Gray,
-                modifier = Modifier.clickable {
-                    navController.popBackStack()
-                },
+                modifier = Modifier.clickable { navController.popBackStack() },
                 textAlign = TextAlign.Center,
                 fontSize = 14.sp
             )
