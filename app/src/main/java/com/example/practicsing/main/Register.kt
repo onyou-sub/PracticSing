@@ -1,4 +1,4 @@
-package com.example.practicsing
+package com.example.practicsing.main
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.*
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import com.example.practicsing.TopBar
 
 
 enum class RegistrationStep {
