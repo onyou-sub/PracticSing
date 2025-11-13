@@ -1,7 +1,5 @@
-// 고유한 주소를 모두 넣어 관리하는 곳!
 package com.example.practicsing.navigation
 
-// file: com/example/practicsing/navigation/Screen.kt
 sealed class Screen(val route: String) {
 
     // --- 1. 앱 진입 및 최상위 흐름 ---
@@ -13,10 +11,15 @@ sealed class Screen(val route: String) {
     // --- 2. BottomNavGraph (하단 내비게이션 탭 4가지) ---
 
     object Home : Screen("home")
-    object Search : Screen("search")
+    object Song : Screen("song")
+    // Search에서 Song으로 네비게이션 수정
     object MyPage : Screen("mypage")
+    object Search : Screen("search")
 
-    // Practice: 일일 연습 페이지 (하단 탭 항목이며, 연속 일수를 인수로 받음)
+    // ⭐ 하단 탭: Practice (일일 연습 시작 페이지)
+    object Practice : Screen("practice_tab_route")
+
+    // DailyPractice: 특정 연속 일수 인수를 받는 상세 연습 페이지
     object DailyPractice : Screen("daily_practice/{streakCount}") {
         // 연속 일수를 받아 정확한 경로 문자열을 생성하는 헬퍼 함수
         fun createRoute(streakCount: Int) = "daily_practice/$streakCount"

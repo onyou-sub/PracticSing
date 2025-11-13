@@ -26,8 +26,7 @@ class MainActivity : ComponentActivity() {
                 ) { paddingValues -> // ✨ paddingValues를 받아 NavHost에 전달하는 것이 좋습니다.
                     // NavGraph 대신 AppNavHost 함수를 호출합니다.
                     AppNavHost(
-                        navController = navController,
-                        padding = paddingValues // 전달된 패딩을 NavHost에 전달
+                        navController = navController
                     )
                 }
             }

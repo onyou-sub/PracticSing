@@ -13,7 +13,7 @@ import com.example.practicsing.R
 val Pretendard = FontFamily(
     // R.font.pretendard_variable은 res/font 폴더에 파일이 있다고 가정합니다.
     Font(
-        resId = R.font.PretendardVariable,
+        resId = R.font.pretendard_variable,
         weight = FontWeight.Normal // 모든 굵기는 이 하나의 폰트 파일을 통해 처리됩니다.
     )
 )

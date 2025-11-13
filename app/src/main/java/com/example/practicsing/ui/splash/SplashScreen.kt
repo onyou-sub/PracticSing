@@ -1,4 +1,4 @@
-package com.example.practicsing.presentation.splash
+package com.example.practicsing.ui.splash
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
