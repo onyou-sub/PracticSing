@@ -7,6 +7,7 @@ sealed class Screen(val route: String) {
     object Login : Screen("login")
     // Main은 하단 탭 바 컨테이너로 이동하는 최상위 경로입니다.
     object Main : Screen("main")
+    object Register : Screen("register")
 
     // --- 2. BottomNavGraph (하단 내비게이션 탭 4가지) ---
 

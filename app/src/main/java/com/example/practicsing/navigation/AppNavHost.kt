@@ -13,7 +13,8 @@ import androidx.navigation.NavType
 // 프로젝트 내부 임포트 (화면 컴포저블은 실제 파일에 정의되어 있다고 가정)
 // ⚠️ 주의: 이 경로에 실제 컴포넌트가 존재해야 합니다!
 import com.example.practicsing.ui.splash.SplashScreen
-import com.example.practicsing.ui.auth.LoginScreen
+import com.example.practicsing.ui.auth.LoginScreen2
+import com.example.practicsing.ui.auth.RegisterScreen
 import com.example.practicsing.ui.song.detail.SongDetailScreen
 import com.example.practicsing.ui.song.practice.SongPracticeScreen
 import com.example.practicsing.ui.search.SearchScreen
@@ -33,7 +34,12 @@ fun AppNavHost(navController: NavHostController) {
         // 2. Login Screen
         composable(Screen.Login.route) {
             // ⭐ Placeholder 대신 실제 컴포넌트 사용
-            LoginScreen(navController = navController)
+            LoginScreen2(navController = navController)
+        }
+
+        // Register Screen
+        composable(Screen.Register.route) {
+            RegisterScreen(navController = navController)
         }
 
         // 3. Main Screen (Bottom Navigation Container)
