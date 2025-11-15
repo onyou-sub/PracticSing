@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.practicsing.main.theme.Gray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +39,7 @@ fun TopBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(3.dp)
-                .background(Color.Gray.copy(alpha = 0.3f))
+                .background(Gray)
         ) {
             Box(
                 modifier = Modifier
