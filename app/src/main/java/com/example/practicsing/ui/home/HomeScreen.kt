@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.draw.clip
+import com.example.practicsing.navigation.Screen
+
 
 // ⭐ RecordVoiceOver 아이콘 사용을 위한 필수 Import
 import androidx.compose.material.icons.Icons
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.ui.text.font.FontWeight
 // ⭐ viewModel() 함수 사용을 위한 필수 Import
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 
 // ===================================================
 // 테마 및 공통 컴포넌트 Import (프로젝트 구조: main.theme, ui.common 사용)
@@ -46,7 +49,7 @@ import com.example.practicsing.presentation.home.HomeViewModel
 // ===================================================
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
+fun HomeScreen(viewModel: HomeViewModel = viewModel(), navController: NavController) {
     // ViewModel의 상태를 수집 (StateFlow를 관찰)
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
@@ -107,7 +110,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                 Spacer(modifier = Modifier.height(2.dp))
 
                 Button(
-                    onClick = { /* TODO: navigate to Pract Screen */ },
+                    onClick = {  navController.navigate(Screen.Practice.route) },
                     colors = ButtonDefaults.buttonColors(containerColor = PinkAccent),
                     shape = RoundedCornerShape(50),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
