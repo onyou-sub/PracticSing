@@ -33,7 +33,7 @@ fun BottomNavGraph(navController: NavHostController) {
 
         // 4. MyPage 탭
         composable(Screen.MyPage.route) {
-            MyScreen()
+            MyScreen(navController = navController)
         }
     }
 }
@@ -49,10 +49,10 @@ private fun SongScreen() {
 }
 
 
-@Composable
+/*@Composable
 private fun MyScreen() {
     Text(text = "My Page Screen Placeholder")
-}
+}*/
 
 @Composable
 private fun HomeScreen() {

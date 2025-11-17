@@ -53,7 +53,7 @@ fun AppNavHost(navController: NavHostController) {
 
 
         composable(Screen.MyPage.route) {
-            MyScreen()  // MyPage 화면
+            MyScreen(navController = navController)  // MyPage 화면
         }
 
 
