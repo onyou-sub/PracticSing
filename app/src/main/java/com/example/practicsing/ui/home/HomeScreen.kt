@@ -45,7 +45,6 @@ import com.example.practicsing.ui.common.RankCard
 // 데이터 모델 및 ViewModel Import (클린 아키텍처 구조 가정)
 import com.example.practicsing.data.model.Song
 import com.example.practicsing.data.model.Rank
-import com.example.practicsing.presentation.home.HomeViewModel
 // ===================================================
 
 @Composable

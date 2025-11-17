@@ -1,4 +1,4 @@
-package com.example.practicsing.data.source
+package com.example.practicsing.data.source.sampledata
 
 import com.example.practicsing.data.model.Song
 import com.example.practicsing.data.model.Rank
