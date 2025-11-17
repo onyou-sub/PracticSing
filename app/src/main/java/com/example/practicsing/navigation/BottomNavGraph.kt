@@ -18,7 +18,7 @@ fun BottomNavGraph(navController: NavHostController) {
     ) {
         // 1. Home 탭
         composable(Screen.Home.route) {
-            HomeScreen()
+            HomeScreen(navController = navController)
         }
 
         // 2. Song 탭

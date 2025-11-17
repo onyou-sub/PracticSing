@@ -21,7 +21,7 @@ fun AppNavHost(navController: NavHostController) {
     // NavHost로 네비게이션 설정
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.Splash.route
     ) {
         composable(Screen.Splash.route) {
             SplashScreen(navController = navController)

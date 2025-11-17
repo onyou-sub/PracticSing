@@ -1,5 +1,6 @@
 package com.example.practicsing.ui.auth
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,6 +37,17 @@ fun LoginScreen2(navController: NavHostController) {
     var isLoading by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        val sharedPref = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+        val loggedInUserId = sharedPref.getString("userid", null)
+        if (loggedInUserId != null) {
+            navController.navigate("home") {
+                popUpTo("practice") { inclusive = true }
+            }
+        }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -162,9 +175,17 @@ fun LoginScreen2(navController: NavHostController) {
                         val isValid = checkUserCredentials(userId, password)
                         isLoading = false
                         if (isValid) {
+                            val sharedPref = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+                            with(sharedPref.edit()) {
+                                putString("userid", userId)
+                                apply()
+                            }
                             errorMessage = null
-                            navController.navigate(Screen.Main.route) {
-                                popUpTo(Screen.Login.route) { inclusive = true }}}
+                            navController.navigate("home") {
+                                popUpTo("practice") { inclusive = true }
+                            }
+                        }
+                             
                         else {
                             errorMessage = "* Invalid username or password. Please try again."
                         }
