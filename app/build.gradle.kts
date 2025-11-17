@@ -112,5 +112,7 @@ dependencies {
     // 선택 사항: Live Literal 및 기타 디버깅 기능을 위해 필요
     debugImplementation("androidx.compose.ui:ui-tooling")
 
+    //유튜브 영상 가져오기
+    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:11.1.0")
 
 }
