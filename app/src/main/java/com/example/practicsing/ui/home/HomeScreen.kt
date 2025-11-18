@@ -40,11 +40,11 @@ import com.example.practicsing.main.theme.Typography // 정의된 커스텀 Typo
 
 import com.example.practicsing.ui.common.TabButton
 import com.example.practicsing.ui.common.SongCard
-import com.example.practicsing.ui.common.RankCard
+import com.example.practicsing.ui.common.HomeRankUi
+import com.example.practicsing.ui.common.HomeRankCard
 
 // 데이터 모델 및 ViewModel Import (클린 아키텍처 구조 가정)
 import com.example.practicsing.data.model.Song
-import com.example.practicsing.data.model.Rank
 import com.example.practicsing.presentation.home.HomeViewModel
 // ===================================================
 
@@ -204,12 +204,13 @@ fun SongList(songs: List<Song>) { // data.model.Song 타입 사용
 }
 
 @Composable
-fun RankList(ranks: List<Rank>) { // data.model.Rank 타입 사용
+fun RankList(ranks: List<HomeRankUi>) {
     Column(
-        modifier = Modifier.fillMaxWidth().wrapContentHeight()
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         ranks.forEach { rank ->
-            RankCard(rank)
+            HomeRankCard(rank)
         }
     }
 }
