@@ -35,6 +35,9 @@ fun AppNavHost(
             RegisterScreen(navController = navController)
         }
 
+        composable(Screen.Search.route) {
+            SearchScreen(navController = navController)
+        }
         bottomNavGraph(navController = navController)
     }
 }
