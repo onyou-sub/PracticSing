@@ -43,9 +43,8 @@ fun AppNavHost(navController: NavHostController) {
 
 
         composable(Screen.Song.route) {
-            SongScreen()  // Song 화면
+            SongScreen(navController = navController)
         }
-
 
         composable(Screen.Practice.route) {
             PracticeScreen(navController = navController)  // Practice 화면
