@@ -2,7 +2,6 @@ package com.example.practicsing.ui.pract
 
 import android.Manifest
 import android.content.pm.PackageManager
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
@@ -24,7 +23,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.example.practicsing.R
 import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.Gray
 import com.example.practicsing.main.theme.PinkAccent
@@ -42,6 +40,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.*
 import androidx.activity.ComponentActivity
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.*
 import com.example.practicsing.R
+import kotlin.math.abs
 
 // -----------------------------
 //  Practice Step Enum
