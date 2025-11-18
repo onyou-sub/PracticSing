@@ -2,93 +2,78 @@ package com.example.practicsing.ui.splash
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.practicsing.R
-import com.example.practicsing.navigation.Screen // 네비게이션 라우트 정의 필요
-import com.example.practicsing.main.theme.MainText // 텍스트 색상
-import com.example.practicsing.main.theme.Typography // 폰트 스타일
+import com.example.practicsing.navigation.Screen
+import com.example.practicsing.main.theme.MainText
+import com.example.practicsing.main.theme.Typography
+import com.example.practicsing.main.theme.BasePink
 import kotlinx.coroutines.delay
 
-// 기존 SplashScreen 코드는 그대로 둡니다.
 @Composable
 fun SplashScreen(navController: NavController) {
-    // ... LaunchedEffect 및 UI 로직 ...
-    // ... (UI 로직은 아래 SplashScreenContent에 위임) ...
 
-    LaunchedEffect(key1 = true) {
-        delay(2000L)
+    // ⭐ BuildConfig 제거 → 바로 네비게이션 가능
+    LaunchedEffect(Unit) {
+        delay(1200)
+
+        // 기본: Login 화면으로 이동
         navController.popBackStack()
         navController.navigate(Screen.Login.route)
     }
 
-    // UI 부분을 별도의 함수로 분리하여 호출
     SplashScreenContent()
 }
 
-// ----------------------------------------------------
-// ✨ 프리뷰를 위해 추가된 함수 (인수가 없어야 함)
-@Preview
-@Composable
-fun SplashScreenPreview() {
-    // LaunchedEffect처럼 navigation 로직을 포함하지 않고,
-    // 오직 UI 컴포넌트만 렌더링하도록 분리된 함수를 호출합니다.
-    SplashScreenContent()
-}
-// ----------------------------------------------------
-
-
-// 🖼️ UI 구성만 담당하는 함수 (Navigation과 분리)
 @Composable
 fun SplashScreenContent() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(com.example.practicsing.main.theme.BasePink), // 배경 색상 (임시)
+            .background(BasePink),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-            // 로고 (VectorDrawable 또는 PNG)
+            // 앱 로고
             Image(
                 painter = painterResource(id = R.drawable.logo),
-                contentDescription = "PracticSing Logo",
+                contentDescription = "Logo",
                 modifier = Modifier.size(80.dp)
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(Modifier.height(20.dp))
 
-            // 타이틀 "PracticSing"
+            // 앱 이름
             Text(
                 text = "PracticSing",
                 color = MainText,
-                style = Typography.headlineMedium,
+                style = Typography.headlineMedium
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(Modifier.height(4.dp))
 
-            // 서브타이틀 "Where the voice learns Korean"
+            // 서브 텍스트
             Text(
                 text = "Where the voice learns Korean",
                 color = MainText,
-                style = Typography.bodyMedium,
+                style = Typography.bodyMedium
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SplashScreenPreview() {
+    SplashScreenContent()
 }
