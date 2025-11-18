@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.practicsing.data.repository.SongRepositoryImpl
 
 import com.example.practicsing.ui.song.components.SongSearchBar
 import com.example.practicsing.ui.song.components.SongCategoryTabs
@@ -22,7 +23,7 @@ import com.example.practicsing.ui.song.components.SongItem
 @Composable
 fun SongScreen(
     navController: NavHostController,
-    vm: SongViewModel = viewModel()
+    vm: SongViewModel = viewModel(factory = SongViewModelFactory(SongRepositoryImpl()))
 ) {
     val songs by vm.songs.collectAsState()
     val selectedCategory by vm.category.collectAsState()
