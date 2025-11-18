@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavHostController
+import com.example.practicsing.navigation.Screen
 import com.example.practicsing.navigation.TopBar
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
@@ -378,41 +379,47 @@ fun RegisterScreen (navController: NavHostController) {
 
                         Spacer(modifier = Modifier.weight(1f))
 
-                        if (isNameValid) {
-                            Button(
-                                onClick = {
-                                    scope.launch {
-                                        isLoading = true
-                                        val success = registerUser(
-                                            userId = userId,
-                                            password = password,
-                                            name = name,
-                                            gender = gender,
-                                            favoriteSinger = favoriteSinger
-                                        )
-                                        isLoading = false
-                                        if (success) {
-
-                                        } else {
-                                            errorMessage3 = "* Registration failed. Please try again."
+                        // Done Button
+                        Button(
+                            onClick = {
+                                scope.launch {
+                                    isLoading = true
+                                    val success = registerUser(
+                                        userId = userId,
+                                        password = password,
+                                        name = name,
+                                        gender = gender,
+                                        favoriteSinger = favoriteSinger
+                                    )
+                                    isLoading = false
+                                    if (success) {
+                                        navController.navigate(Screen.Login.route) {
+                                            popUpTo(Screen.Register.route) { inclusive = true }
                                         }
+                                    } else {
+                                        errorMessage3 = "Registration failed. Please try again."
                                     }
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF0088)),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(56.dp),
-                                shape = RoundedCornerShape(10.dp)
-                            ) {
-                                Text("Done!", color = Color.White, fontSize = 18.sp)
+                                }
+                            },
+                            enabled = isNameValid && !isLoading,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xffff0088),
+                                disabledContainerColor = Color(0xFF1C1C1E)
+                            )
+                        ) {
+                            if (isLoading) {
+                                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                            } else {
+                                Text("Done", color = Color.White)
                             }
                         }
-
                     }
+                }
             }
         }
     }
 }
-}
-
-
