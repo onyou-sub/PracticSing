@@ -43,8 +43,8 @@ fun LoginScreen2(navController: NavHostController) {
         val sharedPref = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
         val loggedInUserId = sharedPref.getString("userid", null)
         if (loggedInUserId != null) {
-            navController.navigate("home") {
-                popUpTo("practice") { inclusive = true }
+            navController.navigate(Screen.Main.route) {
+                popUpTo(Screen.Splash.route) { inclusive = true }
             }
         }
     }
@@ -181,8 +181,8 @@ fun LoginScreen2(navController: NavHostController) {
                                 apply()
                             }
                             errorMessage = null
-                            navController.navigate("home") {
-                                popUpTo("practice") { inclusive = true }
+                            navController.navigate(Screen.Main.route) {
+                                popUpTo(Screen.Splash.route) { inclusive = true }
                             }
                         }
                              

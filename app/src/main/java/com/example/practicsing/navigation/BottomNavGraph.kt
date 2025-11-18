@@ -9,11 +9,10 @@ import com.example.practicsing.ui.song.SongScreen
 import com.example.practicsing.ui.my.MyScreen
 import com.example.practicsing.ui.pract.PracticeScreen
 
-@Composable
-fun BottomNavGraph(navController: NavHostController) {
-    NavHost(
-        navController = navController,
-        startDestination = Screen.Home.route
+fun NavGraphBuilder.bottomNavGraph(navController: NavHostController) {
+    navigation(
+        startDestination = Screen.Home.route,
+        route = Screen.Main.route
     ) {
         composable(Screen.Home.route) {
             HomeScreen(navController = navController)
