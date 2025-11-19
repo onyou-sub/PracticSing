@@ -38,12 +38,7 @@ fun SongItem(song: Song, onClick: () -> Unit) {
             Text(song.title, color = Color.White, fontSize = 18.sp)
             Text("${song.artist} · ${song.genre.name}", color = Color.Gray, fontSize = 14.sp)
 
-            Text(
-                song.description,
-                color = Color.Gray,
-                fontSize = 13.sp,
-                maxLines = 1
-            )
+
 
             Text(
                 "Participants ${song.participants}",

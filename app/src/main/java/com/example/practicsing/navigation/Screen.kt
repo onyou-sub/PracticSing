@@ -28,4 +28,10 @@ sealed class Screen(val route: String) {
     object DailyPractice : Screen("daily_practice/{streakCount}") {
         fun createRoute(streakCount: Int) = "daily_practice/$streakCount"
     }
+
+    object SongArchive : Screen("song_archive")
+
+    object AiEvaluation : Screen("ai_evaluation/{recordId}") {
+        fun createRoute(recordId: String) = "ai_evaluation/$recordId"
+    }
 }

@@ -12,7 +12,7 @@ val sampleSongs = listOf(
         genre = Genre.Dance,
         level = Level.Medium,
         description = "A dynamic dance track with powerful vocal lines.",
-        imageUrl = "https://dummy.com/drama.jpg",
+        imageUrl = "https://image.bugsm.co.kr/album/images/500/40929/4092948.jpg",
         releaseDate = "2023-11-10",
         participants = 34
     ),
@@ -23,7 +23,7 @@ val sampleSongs = listOf(
         genre = Genre.POP,
         level = Level.Medium,
         description = "A catchy pop song with futuristic vibes.",
-        imageUrl = "https://dummy.com/supernova.jpg",
+        imageUrl = "https://image.bugsm.co.kr/album/images/500/41011/4101141.jpg",
         releaseDate = "2024-05-01",
         participants = 41
     ),
@@ -34,7 +34,7 @@ val sampleSongs = listOf(
         genre = Genre.POP,
         level = Level.Easy,
         description = "NewJeans’ signature minimal pop hit.",
-        imageUrl = "https://dummy.com/hypeboy.jpg",
+        imageUrl = "https://image.bugsm.co.kr/album/images/500/40780/4078016.jpg",
         releaseDate = "2022-08-01",
         participants = 57
     ),
@@ -45,7 +45,7 @@ val sampleSongs = listOf(
         genre = Genre.Acoustic,
         level = Level.Medium,
         description = "A bright and upbeat track with energetic rhythm.",
-        imageUrl = "https://dummy.com/eta.jpg",
+        imageUrl = "https://image.bugsm.co.kr/album/images/500/40885/4088574.jpg",
         releaseDate = "2023-07-21",
         participants = 29
     ),
