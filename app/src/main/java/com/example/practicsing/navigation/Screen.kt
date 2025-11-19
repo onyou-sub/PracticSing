@@ -6,20 +6,19 @@ sealed class Screen(val route: String) {
     object Splash : Screen("splash")
     object Login : Screen("login")
     object Register : Screen("register")
-    object Main : Screen("main")
+    object Main : Screen("main") // Bottom Nav 그룹의 라우트
 
     // --- 2. Bottom Navigation 탭 ---
     object Home : Screen("home")
-    object Song : Screen("song_list")   // ← 수정됨 (song → song_list)
+    object Song : Screen("song_list")
     object Practice : Screen("practice_tab_route")
     object MyPage : Screen("mypage")
 
-    // 검색 화면
+    // --- 3. 최상위 상세 화면 (SongScreen에서 호출됨) ---
     object Search : Screen("search")
 
-    // --- 3. 상세 화면 ---
     object SongDetail : Screen("song_detail/{songId}") {
-        fun createRoute(songId: Long) = "song_detail/$songId"
+        fun createRoute(songId: String) = "song_detail/$songId"
     }
 
     object SongPractice : Screen("song_practice/{songId}") {
