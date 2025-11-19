@@ -7,17 +7,13 @@ import androidx.navigation.compose.composable
 import com.example.practicsing.ui.auth.LoginScreen2
 import com.example.practicsing.ui.auth.RegisterScreen
 import com.example.practicsing.ui.splash.SplashScreen
-
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.padding
-
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier
-    ) {
-
+) {
     NavHost(
         navController = navController,
         modifier = modifier,
