@@ -15,7 +15,7 @@
         android:theme="@style/Theme.PracticSing">
 
         <activity
-            android:name=".main.MainActivity"
+            android:name="com.example.practicsing.main.MainActivity"
             android:exported="true">
 
             <intent-filter>
