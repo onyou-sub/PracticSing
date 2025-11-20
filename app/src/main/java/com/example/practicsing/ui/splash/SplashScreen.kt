@@ -24,13 +24,13 @@ fun SplashScreen(navController: NavController) {
 
     // ⭐ BuildConfig 제거 → 바로 네비게이션 가능
     LaunchedEffect(Unit) {
-        delay(1200)
+        delay(1500)
 
         // 기본: Login 화면으로 이동
+        // **[수정]** 로그인(Login) 대신 메인(Main) 화면으로 바로 이동
         navController.popBackStack()
-        navController.navigate(Screen.Login.route)
+        navController.navigate(Screen.Login.route) // Login 대신 Main으로 변경
     }
-
     SplashScreenContent()
 }
 
