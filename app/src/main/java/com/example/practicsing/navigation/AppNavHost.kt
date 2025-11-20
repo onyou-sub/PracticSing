@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.example.practicsing.ui.auth.LoginScreen2
 import com.example.practicsing.ui.auth.RegisterScreen
 import com.example.practicsing.ui.splash.SplashScreen
+import com.example.practicsing.ui.search.SearchScreen
 import androidx.compose.ui.Modifier
 
 @Composable
