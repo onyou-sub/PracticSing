@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 import com.example.practicsing.ui.home.HomeScreen
 import com.example.practicsing.ui.song.SongScreen
 import com.example.practicsing.ui.my.MyScreen

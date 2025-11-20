@@ -105,7 +105,7 @@ fun RegisterScreen (navController: NavHostController) {
                     RegistrationStep.STEP_1 -> {
                         // Step 1: ID and Password
                         Text(
-                            text = "Hello!\nRegister to get started.",
+                            text = "Hello! \n Register to get started.",
                             style = TextStyle(
                                 fontSize = 20.sp,
                                 lineHeight = 28.sp,
@@ -252,13 +252,13 @@ fun RegisterScreen (navController: NavHostController) {
                     RegistrationStep.STEP_2 -> {
                         // Step 2: Name, Gender, Favorite Singer
                         Text(
-                            text = "Tell us\nmore about you",
+                            text = "Tell us more about you",
                             color = Color(0xFFECECEE),
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold
                         )
 
-                        Spacer(modifier = Modifier.height(32.dp)) // 🆕 Add space below the title
+                        Spacer(modifier = Modifier.height(32.dp))
 
                         // Name Field
                         Text(
@@ -338,13 +338,13 @@ fun RegisterScreen (navController: NavHostController) {
                                     .height(48.dp)
                             ) { Text("Female") }
                         }
-
-                        Spacer(modifier = Modifier.height(24.dp)) // 🆕 Space before Favorite Singer
+                        Spacer(modifier = Modifier.height(24.dp))
 
                         // Favorite Singer Field
                         Text(
-                            text = "Favorite Singer",
-                            color = Color(0xFFa6a7ab),
+                            buildAnnotatedString {
+                                withStyle(style = SpanStyle(color = Color(0xFFa6a7ab))) { append("Favorite Singer") }
+                            },
                             fontSize = 14.sp,
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
@@ -353,12 +353,12 @@ fun RegisterScreen (navController: NavHostController) {
                             onValueChange = { favoriteSinger = it },
                             placeholder = {
                                 Text(
-                                    text = "ex) BTS, Bibi",
+                                    text = "ex. IU",
                                     style = TextStyle(
                                         fontSize = 14.sp,
                                         lineHeight = 19.6.sp,
                                         fontWeight = FontWeight(500),
-                                        color = Color(0xFF434448),
+                                        color = Color(0xFF707073),
                                     )
                                 )
                             },
@@ -376,6 +376,17 @@ fun RegisterScreen (navController: NavHostController) {
                             )
                         )
 
+                        errorMessage3?.let {
+                            Text(
+                                text = it,
+                                color = Color(0xFFff0088),
+                                fontSize = 12.sp,
+                                modifier = Modifier
+                                    .padding(top = 12.dp)
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
                         Spacer(modifier = Modifier.weight(1f))
 
