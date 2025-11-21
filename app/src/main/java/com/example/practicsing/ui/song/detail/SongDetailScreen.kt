@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.practicsing.navigation.Screen
 import com.example.practicsing.data.model.Song
 import com.example.practicsing.data.model.LeaderboardEntry
 import com.example.practicsing.data.repository.SongRepositoryImpl
@@ -55,8 +56,8 @@ fun SongDetailScreen(
         bottomBar = {
             Button(
                 onClick = {
-                    // TODO: 나중에 SongPractice 화면 연결
-                    // navController.navigate(Screen.SongPractice.createRoute(song.id))
+                    navController.navigate("SongPractice/${song.id}")
+
                 },
                 modifier = Modifier
                     .fillMaxWidth()

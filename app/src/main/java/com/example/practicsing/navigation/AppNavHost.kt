@@ -8,6 +8,8 @@ import com.example.practicsing.ui.auth.LoginScreen2
 import com.example.practicsing.ui.auth.RegisterScreen
 import com.example.practicsing.ui.splash.SplashScreen
 import com.example.practicsing.ui.search.SearchScreen
+import com.example.practicsing.ui.song.detail.SongDetailScreen
+import com.example.practicsing.ui.song.practice.SongPracticeContent
 import androidx.compose.ui.Modifier
 
 @Composable
@@ -34,6 +36,20 @@ fun AppNavHost(
 
         composable(Screen.Search.route) {
             SearchScreen(navController = navController)
+        }
+
+        composable("song_detail/{songId}") { backStackEntry ->
+            val songId = backStackEntry.arguments?.getString("songId") ?: ""
+            SongDetailScreen(navController = navController, songId = songId)
+        }
+
+
+        composable("SongPractice/{songId}") { backStackEntry ->
+            val songId = backStackEntry.arguments?.getString("songId")!!
+            SongPracticeContent(
+                songId = songId,
+                navController = navController
+            )
         }
         bottomNavGraph(navController = navController)
     }

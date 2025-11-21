@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun SongPracticeScreen(
-    songId: Long,
+    songId: String,
     navController: NavHostController
 ) {
     // 단순히 Content만 호출 (Navigation Entry 역할)

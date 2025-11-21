@@ -638,6 +638,7 @@ fun TonePitchScreen(
                     }
                 }
             }
+            NextButton(onNext)
         }
     }
 }
@@ -691,7 +692,7 @@ fun PronunciationScreen(onFinish: () -> Unit){
                 description1 = "Correct difficult Korean sounds,",
                 description2 = "and practice the natural flow(intonation)."
             )
-
+            // to fix this error ,use actual phone ?
             YouTubePlayer(videoId = "aqz-KE-bpKQ")
 
             Spacer(modifier = Modifier.height(250.dp))

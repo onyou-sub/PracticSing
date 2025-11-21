@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.example.practicsing"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.practicsing"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -87,6 +87,8 @@ dependencies {
 
     // 유튜브 플레이어
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:11.1.0")
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ink.brush)
 
     // ------------------------------------------------------
     // Test
