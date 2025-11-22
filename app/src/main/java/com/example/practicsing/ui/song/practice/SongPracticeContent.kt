@@ -25,7 +25,7 @@ fun SongPracticeContent(
     navController: NavHostController,
     repo: SongRepositoryImpl = SongRepositoryImpl()
 ) {
-    // songId로 곡 정보 조회
+
     val song = remember {
         repo.getSongs().firstOrNull { it.id == songId }
     }

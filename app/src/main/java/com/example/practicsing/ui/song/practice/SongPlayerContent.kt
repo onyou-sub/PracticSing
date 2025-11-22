@@ -195,7 +195,7 @@ fun LyricsScreen(song: Song) {
             .verticalScroll(rememberScrollState())
     ) {
 
-        // 타이틀 표시
+
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
@@ -203,7 +203,7 @@ fun LyricsScreen(song: Song) {
             modifier = Modifier.padding(bottom = 10.dp)
         )
 
-        // 가사 표시
+
         Text(
             text = lyrics,
             color = Color(0xCCFFFFFF),

@@ -2,25 +2,20 @@ package com.example.practicsing.ui.song.practice
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.compose.ui.graphics.Brush
-import coil.compose.AsyncImage
 import com.example.practicsing.data.repository.SongRepositoryImpl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.common.MediaItem
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.DisposableEffect
-import com.example.practicsing.R
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
@@ -28,7 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.media3.common.Player
 import kotlinx.coroutines.delay
-import androidx.compose.material3.Button
+
 @Composable
 fun SongPlayScreen(
     songId: String,
@@ -41,12 +36,12 @@ fun SongPlayScreen(
         repo.getSongs().firstOrNull { it.id == songId }
     }
     if (song == null) {
-        // song이 없으면 그냥 리턴
+
         return
     }
     val resId = remember(key1 = song) {
         context.resources.getIdentifier(
-            song.filename,     // ← 정확한 필드명
+            song.filename,
             "raw",
             context.packageName
         )
