@@ -9,5 +9,6 @@ data class Song(
     val description: String,
     val imageUrl: String,
     val releaseDate: String,
-    val participants: Int
+    val participants: Int,
+    val filename: String
 )

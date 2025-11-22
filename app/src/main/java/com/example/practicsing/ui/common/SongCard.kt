@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -16,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 // Theme 및 Data Model Import
 import com.example.practicsing.main.theme.Gray
 import com.example.practicsing.main.theme.MainText
@@ -29,14 +31,15 @@ fun SongCard(song: Song) {
             .padding(end = 12.dp)
             .clickable { /* TODO: Song Detail로 이동 */ }
     ) {
-        // 이미지 대신 임시 Box (스크린샷 1 참고)
-        Box(
+
+        AsyncImage(
+            model = song.imageUrl,
+            contentDescription = null,
             modifier = Modifier
-                .width(150.dp)
-                .height(150.dp)
+                .size(92.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(Gray) // 임시 배경색
         )
+
         Spacer(modifier = Modifier.height(8.dp))
 
         // 제목
