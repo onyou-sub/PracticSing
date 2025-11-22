@@ -35,7 +35,6 @@ import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.MainText
 import com.example.practicsing.main.theme.PinkAccent
 import com.example.practicsing.main.theme.Gray
-import com.example.practicsing.main.theme.LightPink
 import com.example.practicsing.main.theme.Typography // 정의된 커스텀 Typography 사용
 
 import com.example.practicsing.ui.common.TabButton
@@ -47,7 +46,10 @@ import com.example.practicsing.ui.common.HomeRankCard
 import com.example.practicsing.data.model.Song
 import com.example.practicsing.presentation.home.HomeViewModel
 // ===================================================
-
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Color
+import com.example.practicsing.R
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = viewModel(), navController: NavController) {
     // ViewModel의 상태를 수집 (StateFlow를 관찰)
@@ -78,22 +80,38 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel(), navController: NavControl
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(LightPink, BasePink)
-                    )
-                ),
+                .height(200.dp)
+                .clip(RoundedCornerShape(20.dp)),
             contentAlignment = Alignment.TopCenter
         ){
+            AsyncImage(
+                model = R.drawable.home,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .matchParentSize()
+            )
+
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xAAFF3AAE),
+                                Color(0xAAFF0088)
+                            )
+                        )
+                    )
+            )
+
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Spacer(modifier = Modifier.height(15.dp))
                 // ⭐ RecordVoiceOver 아이콘 사용
                 Icon(Icons.Filled.RecordVoiceOver, contentDescription = "Daily Practice", tint = MainText, modifier = Modifier.size(50.dp))
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Typography 사용: 인삿말 title (headlineMedium)
+
                 Text(
                     text = "Elevate Your Voice Daily",
                     color = MainText,
@@ -101,7 +119,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel(), navController: NavControl
                 )
                 Spacer(modifier = Modifier.height(2.dp))
 
-                // Typography 사용: 작은 알림 (labelSmall)
+
                 Text(
                     text = "Just for 3 minutes",
                     color = Gray,
@@ -115,9 +133,8 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel(), navController: NavControl
                     shape = RoundedCornerShape(50),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
                 ) {
-                    // Typography 사용: CTA (titleMedium)
                     Text(
-                        "Start Daily Practice",
+                        "Click here to join",
                         color = MainText,
                         style = Typography.titleMedium
                     )
@@ -126,7 +143,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel(), navController: NavControl
         }
         Spacer(modifier = Modifier.height(20.dp))
 
-        // --- 3. HOT SONGS 섹션 ---
+
         Text(
             text = "HOT SONGS",
             color = MainText,

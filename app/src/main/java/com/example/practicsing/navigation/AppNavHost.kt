@@ -10,8 +10,9 @@ import com.example.practicsing.ui.splash.SplashScreen
 import com.example.practicsing.ui.search.SearchScreen
 import com.example.practicsing.ui.song.detail.SongDetailScreen
 import com.example.practicsing.ui.song.practice.SongPracticeContent
+import com.example.practicsing.ui.song.practice.SongPlayScreen
 import androidx.compose.ui.Modifier
-
+import androidx.navigation.*
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -51,6 +52,16 @@ fun AppNavHost(
                 navController = navController
             )
         }
+
+        composable("songPlay/{songId}") { backStackEntry ->
+            val songId = backStackEntry.arguments?.getString("songId") ?: ""
+            SongPlayScreen(songId = songId, navController = navController)
+        }
+
+
+
+
+
         bottomNavGraph(navController = navController)
     }
 }
