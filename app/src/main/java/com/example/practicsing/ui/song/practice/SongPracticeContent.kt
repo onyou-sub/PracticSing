@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.*
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.Text
+import com.example.practicsing.ui.common.RoundedBackButton
 
 
 @Composable
@@ -32,14 +34,26 @@ fun SongPracticeContent(
     Column(
 
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf( Color(
+                        0xFFFF0088),
+                        Color(0xFF0E0E0E) ) ) ),
+
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+
+        Spacer(modifier = Modifier.height(150.dp))
+
         Text(
             text="practice Mode",
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.White
 
         )
+        Spacer(modifier = Modifier.height(50.dp))
 
         if (song != null) {
 
@@ -55,7 +69,8 @@ fun SongPracticeContent(
 
             Text(
                 text = song.title,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.White
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -63,37 +78,58 @@ fun SongPracticeContent(
             Text(
                 text = song.artist,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = Color.White
             )
 
             Spacer(modifier = Modifier.height(32.dp))
+
         } else {
             Text("No information.")
             Spacer(modifier = Modifier.height(32.dp))
         }
 
-        Text(
-            text = "How to sing?",
-            style = MaterialTheme.typography.bodyLarge
-        )
+
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        Row(){
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
+        ){
             Button(
-                onClick = { /* TODO */ },
+                onClick = {
+                    navController.navigate("songPlay/$songId")
+                },
                 modifier = Modifier
-                    .height(54.dp)
+                    .height(80.dp)
+                    .width(150.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFF0088),
+                    contentColor = Color.White
+                )
+
             ) {
-                Text("Full Song")
+                Text(
+                    "Full Song",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
 
             OutlinedButton(
                 onClick = { /* TODO */ },
                 modifier = Modifier
-                    .height(54.dp)
+                    .height(80.dp)
+                    .width(150.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black,
+                    contentColor = Color.White
+                )
             ) {
-                Text("Part only")
+                Text(
+                    "Part only",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
         }
 
@@ -101,4 +137,15 @@ fun SongPracticeContent(
 
 
     }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        RoundedBackButton(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 16.dp),
+            onClick = { navController.popBackStack() }
+        )
+    }
 }
+
+

@@ -1,7 +1,12 @@
 package com.example.practicsing.ui.song.practice
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.practicsing.ui.common.RoundedBackButton
 
 @Composable
 fun SongPracticeScreen(
@@ -13,4 +18,6 @@ fun SongPracticeScreen(
         songId = songId,
         navController = navController
     )
+
+
 }
