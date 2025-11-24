@@ -97,7 +97,7 @@ fun SongPracticeContent(
         ){
             Button(
                 onClick = {
-                    navController.navigate("songPlay/$songId")
+                    navController.navigate("SongPlay/$songId")
                 },
                 modifier = Modifier
                     .height(80.dp)
@@ -116,7 +116,9 @@ fun SongPracticeContent(
             }
 
             OutlinedButton(
-                onClick = { /* TODO */ },
+                onClick = {
+                    navController.navigate("PartPlay/$songId" )
+                          },
                 modifier = Modifier
                     .height(80.dp)
                     .width(150.dp),
@@ -131,6 +133,27 @@ fun SongPracticeContent(
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
+        }
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Button(
+            onClick = {
+                navController.navigate("Pronunciation/$songId")
+            },
+            modifier = Modifier
+                .height(50.dp)
+                .width(300.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFFF0088),
+                contentColor = Color.White
+            )
+
+        ) {
+            Text(
+                "Test button",
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
 
 

@@ -10,9 +10,12 @@ import com.example.practicsing.ui.splash.SplashScreen
 import com.example.practicsing.ui.search.SearchScreen
 import com.example.practicsing.ui.song.detail.SongDetailScreen
 import com.example.practicsing.ui.song.practice.SongPracticeContent
-import com.example.practicsing.ui.song.practice.SongPlayScreen
+import com.example.practicsing.ui.song.practice.SongPlayerScreen
+import com.example.practicsing.ui.song.practice.PartPlayerScreen
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
+import com.example.practicsing.ui.song.practice.TempScreen
+import com.example.practicsing.ui.song.practice.AsrScreen
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -53,12 +56,29 @@ fun AppNavHost(
             )
         }
 
-        composable("songPlay/{songId}") { backStackEntry ->
+        composable("SongPlay/{songId}") { backStackEntry ->
             val songId = backStackEntry.arguments?.getString("songId") ?: ""
-            SongPlayScreen(songId = songId, navController = navController)
+            SongPlayerScreen(songId = songId, navController = navController)
         }
 
 
+        composable("PartPlay/{songId}") { backStackEntry ->
+            val songId = backStackEntry.arguments?.getString("songId") ?: ""
+            PartPlayerScreen(songId = songId, navController = navController)
+        }
+
+        composable("Pronunciation/{songId}") { backStackEntry ->
+            val songId = backStackEntry.arguments?.getString("songId") ?: ""
+            TempScreen(songId = songId, navController = navController)
+        }
+
+        composable(
+            route = "asr_screen/{line}",
+            arguments = listOf(navArgument("line") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val line = backStackEntry.arguments?.getString("line") ?: ""
+            AsrScreen(currentLine = line)
+        }
 
 
 

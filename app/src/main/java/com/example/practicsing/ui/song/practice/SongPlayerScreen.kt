@@ -22,10 +22,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.media3.common.Player
+import com.example.practicsing.ui.common.RoundedBackButton
 import kotlinx.coroutines.delay
 
 @Composable
-fun SongPlayScreen(
+fun SongPlayerScreen(
     songId: String,
     navController: NavHostController,
     repo: SongRepositoryImpl = SongRepositoryImpl()
@@ -172,6 +173,15 @@ fun SongPlayScreen(
             }
 
         }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        RoundedBackButton(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 16.dp),
+            onClick = { navController.popBackStack() }
+        )
     }
 }
 
