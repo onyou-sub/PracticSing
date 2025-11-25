@@ -45,6 +45,8 @@ import com.example.practicsing.R
 import java.io.File
 import kotlin.math.abs
 
+import com.example.practicsing.data.PracticePrefs
+import kotlinx.coroutines.*
 // -----------------------------
 //  Practice Step Enum
 // -----------------------------
@@ -66,11 +68,16 @@ fun PracticeScreen(
     navController: NavController
 
 ) {
+    val context = LocalContext.current
     var step by remember { mutableStateOf(PracticeStep.Splash) }
+
+    val currentDay = remember { PracticePrefs.getCurrentDay(context) }
+
 
     when (step) {
 
         PracticeStep.Splash -> StartScreen(
+            day = currentDay,
             onNext = { step = PracticeStep.BreathIntro }
         )
 
@@ -89,8 +96,19 @@ fun PracticeScreen(
         )
         PracticeStep.Finish -> FinishScreen(
             onFinish = {
-                navController.navigate("home") {
-                    popUpTo("practice") { inclusive = true }
+
+                PracticePrefs.updateLastPracticeDate(context)
+
+
+                if (PracticePrefs.canIncreaseDay(context)) {
+                    PracticePrefs.increaseDay(context)
+                }
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(50)
+                    navController.navigate("home") {
+                        popUpTo("practice") { inclusive = true }
+                    }
                 }
             }
         )
@@ -99,7 +117,7 @@ fun PracticeScreen(
 
 
 @Composable
-fun StartScreen(onNext: () -> Unit) {
+fun StartScreen(day: Int, onNext: () -> Unit) {
 
     LaunchedEffect(true) {
         delay(2000)
@@ -127,7 +145,7 @@ fun StartScreen(onNext: () -> Unit) {
                 onClick = onNext,
                 colors = ButtonDefaults.buttonColors(containerColor = PinkAccent)
             ) {
-                Text("Day 1")
+                Text("Day $day")
             }
         }
     }
@@ -695,7 +713,7 @@ fun PronunciationScreen(onFinish: () -> Unit){
             // to fix this error ,use actual phone ?
             YouTubePlayer(videoId = "aqz-KE-bpKQ")
 
-            Spacer(modifier = Modifier.height(250.dp))
+            Spacer(modifier = Modifier.height(230.dp))
             FinishButton(onFinish)
         }
     }
