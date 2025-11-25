@@ -1,4 +1,3 @@
-// file: app/src/main/java/com/example/practicsing/ui/my/components/DailyPracticeCard.kt
 package com.example.practicsing.ui.my.components
 
 import androidx.compose.foundation.background
@@ -21,9 +20,10 @@ import com.example.practicsing.main.theme.Typography
 
 @Composable
 fun DailyPracticeCard(
-    dateLabel: String,     // "11.10"
-    streakCount: Int,      // 오늘까지 연속일 수
-    totalSlots: Int        // 도트 개수 (예: 7)
+    dateLabel: String,
+    streakCount: Int,
+    totalSlots: Int,
+    practicedToday: Boolean
 ) {
     Card(
         modifier = Modifier
@@ -39,6 +39,7 @@ fun DailyPracticeCard(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
+
             Text(
                 text = "Daily Practice",
                 color = MainText,
@@ -47,20 +48,23 @@ fun DailyPracticeCard(
 
             Spacer(Modifier.height(10.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // 오늘 날짜 + 분홍 동그라미
+            Row(verticalAlignment = Alignment.CenterVertically) {
+
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(text = dateLabel, color = Gray, style = Typography.labelSmall)
                     Spacer(Modifier.height(6.dp))
+
                     Box(
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(PinkAccent),
+                            .background(
+                                if (practicedToday) PinkAccent
+                                else Color(0xFF303030)
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -73,10 +77,7 @@ fun DailyPracticeCard(
 
                 Spacer(Modifier.width(12.dp))
 
-                // 남은 도트들
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     val remain = (totalSlots - 1).coerceAtLeast(0)
                     repeat(remain) {
                         Box(

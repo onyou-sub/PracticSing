@@ -18,12 +18,45 @@ import com.example.practicsing.ui.common.AppScreenContainer
 import com.example.practicsing.ui.my.components.DailyPracticeCard
 import com.example.practicsing.ui.my.components.ProfileCard
 import com.example.practicsing.ui.my.components.SongArchivePreviewCard
-
+import com.example.practicsing.data.PracticePrefs
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 @Composable
 fun MyScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
+
+    var practicedToday by remember { mutableStateOf(false) }
+    var streak by remember { mutableStateOf(1) }
+    
+    //정보 불러오기
+    val prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+    val savedUserId = prefs.getString("userid", null)
+
+    var userName by remember { mutableStateOf("") }
+    var favoriteSinger by remember { mutableStateOf("") }
+
+
+    LaunchedEffect(savedUserId) {
+        if (savedUserId != null) {
+            val snapshot = FirebaseFirestore.getInstance()
+                .collection("Users")
+                .document(savedUserId)
+                .get()
+                .await()
+
+            userName = snapshot.getString("Name") ?: "Unknown"
+            favoriteSinger = snapshot.getString("FavoriteSinger") ?: "Unknown"
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        practicedToday = PracticePrefs.didPracticeToday(context)
+        streak = PracticePrefs.getCurrentDay(context)
+    }
 
     AppScreenContainer {
 
@@ -39,33 +72,32 @@ fun MyScreen(
 
         Spacer(Modifier.height(24.dp))
 
-        // 2. 프로필 카드
+        //실제 로그인 정보 불러오기
         ProfileCard(
-            userName = "유정",
-            email = "oujungzoey@gmail.com",
+            userName = userName,
+            email = favoriteSinger,
             profileImageUrl = null,
             onLogout = {
-                // ✅ 로그아웃 처리
                 val prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
                 with(prefs.edit()) {
-                    remove("userid")   // 필요하면 clear() 로 전체 삭제
+                    remove("userid")
                     apply()
                 }
-
-                // ✅ 네비게이션: 스택 비우고 로그인으로
                 navController.navigate(Screen.Login.route) {
                     popUpTo(Screen.Main.route) { inclusive = true }
                 }
             }
         )
 
+
         Spacer(Modifier.height(24.dp))
 
         // 3. Daily Practice 카드
         DailyPracticeCard(
-            dateLabel = "11.10",
-            streakCount = 1,
-            totalSlots = 7
+            dateLabel = "Today",
+            streakCount = streak,
+            totalSlots = 7,
+            practicedToday = practicedToday
         )
 
         Spacer(Modifier.height(24.dp))
