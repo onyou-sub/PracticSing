@@ -90,43 +90,59 @@ class AsrViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private suspend fun callRecognition(accessKey: String) {
-        val base64 = Base64.encodeToString(buffer.toByteArray(), Base64.NO_WRAP)
-
-        val req = EtriRequest(
-            access_key = accessKey,
-            argument = mapOf(
-                "language_code" to "korean",
-                "audio" to base64
-            )
-        )
-
-        try {
-            val res = api.recognize(req)
-            resultText = res.result ?: "인식 실패"
-        } catch (e: Exception) {
-            resultText = "오류: ${e.message}"
-        }
+        // 다시 작성 // 
     }
 
     private suspend fun callPronunciation(accessKey: String, script: String) {
         val base64 = Base64.encodeToString(buffer.toByteArray(), Base64.NO_WRAP)
 
         val req = EtriRequest(
-            access_key = accessKey,
-            argument = mapOf(
-                "language_code" to "english",
-                "script" to script,
-                "audio" to base64
+            accessKey = accessKey,
+            argument = EtriArgument(
+                languageCode = "korean",
+                script = script,
+                audio = base64
             )
         )
 
         try {
             val res = api.pronunciation(req)
-            resultText = res.result ?: "fail"
+            val obj = res.returnObject
+
+            pronunciationResult = PronunciationResult(
+                recognized = obj?.recognized ?: "",
+                score = obj?.score ?: 0f
+            )
         } catch (e: Exception) {
             resultText = "오류: ${e.message}"
         }
     }
 
 
+    //test audio file
+    private fun loadAudioFromRaw(resId: Int): ByteArray {
+        val inputStream = context.resources.openRawResource(resId)
+        return inputStream.readBytes()
+    }
+
+    fun testPronunciationFromFile(resId: Int, script: String) {
+        viewModelScope.launch {
+            // 1) 파일 → byte array
+            val audioBytes = loadAudioFromRaw(resId)
+
+            // 2) 기존 buffer에 넣기
+            buffer.clear()
+            buffer.addAll(audioBytes.toList())
+
+            // 3) callPronunciation 호출
+            resultText = "evaluating..."
+            callPronunciation(ACCESS_KEY, script)
+        }
+    }
+
+
+
 }
+
+
+

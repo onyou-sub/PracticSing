@@ -32,25 +32,9 @@ import com.example.practicsing.viewmodel.AsrViewModel
 import androidx.compose.ui.draw.clip
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.practicsing.BuildConfig
-@Composable
-fun PinkButton(
-    text: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-            .height(50.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFFF0088),
-            contentColor = Color.White
-        )
-    ) {
-        Text(text)
-    }
-}
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import com.example.practicsing.R
 
 
 @Composable
@@ -88,7 +72,7 @@ fun TempScreen(
 
 
     val currentLine = if (lyricsLines.isNotEmpty()) lyricsLines[currentIndex] else "loading.."
-
+    var showPronunciationUI by remember { mutableStateOf(false) }
     Box(modifier = Modifier.fillMaxSize()) {
 
         // Background
@@ -149,7 +133,8 @@ fun TempScreen(
                     text = "evaluate",
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        navController.navigate("asr_screen/${currentLine}")
+                        showPronunciationUI = true
+                        viewModel.speakKorean(currentLine) // 듣기 자동 실행할 수도 있음
                     }
                 )
 
@@ -163,6 +148,26 @@ fun TempScreen(
                     }
                 )
             }
+
+
+
+            if (showPronunciationUI) {
+                PronunciationPracticeUI(
+                    currentLine = currentLine,
+                    viewModel = viewModel
+                )
+            }
+
+            CircleIconButton(
+                icon = Icons.Default.PlayArrow,
+                backgroundColor = Color(0xFF505050),
+                onClick = {
+                    viewModel.testPronunciationFromFile(
+                        resId = R.raw.test_audio,
+                        script = currentLine
+                    )
+                }
+            )
 
             Spacer(modifier = Modifier.height(200.dp))
 
@@ -183,71 +188,3 @@ fun TempScreen(
 }
 
 
-@Composable
-fun PronunciationPracticeUI(
-    currentLine: String,
-    viewModel: AsrViewModel
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Text(
-            text = currentLine,
-            color = Color.White,
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 30.dp)
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-
-            PinkButton(
-                text = "listen",
-                modifier = Modifier.weight(1f),
-                onClick = { viewModel.speakKorean(currentLine) }
-            )
-
-            PinkButton(
-                text = if (viewModel.isRecording) "stop " else "speak",
-                modifier = Modifier.weight(1f),
-                onClick = {
-                    if (!viewModel.isRecording)
-                        viewModel.startRecording()
-                    else
-                        viewModel.stopRecordingPronunciation(
-                            accessKey = BuildConfig.ETRI_KEY,
-                            script = currentLine
-                        )
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-
-        viewModel.pronunciationResult?.let { result ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0x33000000))
-                    .padding(20.dp)
-            ) {
-                Column {
-                    Text("result", color = Color.White)
-                    Spacer(Modifier.height(12.dp))
-                    Text("sentence: ${result.recognized}", color = Color.White)
-                    Text("accuracy: ${result.score}%", color = Color.White)
-                }
-            }
-        }
-    }
-}
