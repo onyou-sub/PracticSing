@@ -13,6 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
 import com.example.practicsing.main.theme.MainText
 import com.example.practicsing.main.theme.PinkAccent
 import com.example.practicsing.main.theme.Gray
@@ -50,10 +53,8 @@ fun DailyPracticeCard(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
 
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                // 왼쪽 날짜 + 큰 원 (streak)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(text = dateLabel, color = Gray, style = Typography.labelSmall)
                     Spacer(Modifier.height(6.dp))
 
@@ -62,8 +63,7 @@ fun DailyPracticeCard(
                             .size(32.dp)
                             .clip(CircleShape)
                             .background(
-                                if (practicedToday) PinkAccent
-                                else Color(0xFF303030)
+                                if (practicedToday) PinkAccent else Color(0xFF303030)
                             ),
                         contentAlignment = Alignment.Center
                     ) {
@@ -77,18 +77,34 @@ fun DailyPracticeCard(
 
                 Spacer(Modifier.width(12.dp))
 
+
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    val remain = (totalSlots - 1).coerceAtLeast(0)
-                    repeat(remain) {
+                    repeat(totalSlots - 1) { index ->
+
+                        val isTodaySlot = (index == 0 && practicedToday)
+
                         Box(
                             modifier = Modifier
                                 .size(20.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF303030))
-                        )
+                                .background(
+                                    if (isTodaySlot) PinkAccent else Color(0xFF303030)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (isTodaySlot) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Checked",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
 }
+

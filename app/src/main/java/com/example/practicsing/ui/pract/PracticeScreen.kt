@@ -328,7 +328,7 @@ fun BreathPracticeScreen(onFinish: () -> Unit) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(250.dp))
+            Spacer(modifier = Modifier.height(100.dp))
 
             if (!started) {
                 StartButton(onStart = { started = true })
@@ -339,32 +339,7 @@ fun BreathPracticeScreen(onFinish: () -> Unit) {
 
 
 
-@Composable
-fun BreathBox(label: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-        Text(
-            label,
-            color = Color.White,
-            fontSize = 12.sp
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Box(
-            modifier = Modifier
-                .size(80.dp)
-                .background(Color.White, shape = RoundedCornerShape(12.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                value,
-                color = DarkBackground,
-                fontSize = 36.sp
-            )
-        }
-    }
-}
 
 @Composable
 fun StartButton(onStart: () -> Unit) {
@@ -713,7 +688,7 @@ fun PronunciationScreen(onFinish: () -> Unit){
             // to fix this error ,use actual phone ?
             YouTubePlayer(videoId = "aqz-KE-bpKQ")
 
-            Spacer(modifier = Modifier.height(230.dp))
+            Spacer(modifier = Modifier.height(100.dp))
             FinishButton(onFinish)
         }
     }
