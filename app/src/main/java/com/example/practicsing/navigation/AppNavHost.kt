@@ -17,6 +17,7 @@ import androidx.navigation.*
 import com.example.practicsing.ui.song.practice.TempScreen
 import com.example.practicsing.ui.song.practice.AsrScreen
 import com.example.practicsing.ui.song.Test.PronunciationTestScreen
+import com.example.practicsing.ui.my.SongArchiveScreen
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -83,6 +84,10 @@ fun AppNavHost(
 
         composable("pronunciation_test") {
             PronunciationTestScreen()
+        }
+
+        composable(Screen.SongArchive.route) {
+            SongArchiveScreen(navController)
         }
 
 

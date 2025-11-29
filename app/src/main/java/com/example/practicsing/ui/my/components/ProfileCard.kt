@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.draw.shadow
 import coil.compose.AsyncImage
 import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.Gray
@@ -32,75 +33,45 @@ fun ProfileCard(
     profileImageUrl: String? = null,
     onLogout: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(170.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(Color(0xFF181818))
-    ) {
-        // 위쪽에 걸쳐 있는 아바타
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .offset(y = (-32).dp)
-        ) {
-            // 바깥 핑크 링
-            Box(
-                modifier = Modifier
-                    .size(82.dp)
-                    .clip(CircleShape)
-                    .background(PinkAccent.copy(alpha = 0.8f)),
-                contentAlignment = Alignment.Center
-            ) {
-                // 안쪽 원 (배경 검정)
-                Box(
-                    modifier = Modifier
-                        .size(76.dp)
-                        .clip(CircleShape)
-                        .background(DarkBackground),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (profileImageUrl.isNullOrBlank()) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = null,
-                            tint = MainText,
-                            modifier = Modifier.size(36.dp)
-                        )
-                    } else {
-                        AsyncImage(
-                            model = profileImageUrl,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(76.dp)
-                                .clip(CircleShape)
-                        )
-                    }
-                }
-            }
-        }
 
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.TopCenter
+    ) {
+
+        // 1️⃣ 회색 카드(프레임)
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 56.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
+                .padding(top = 60.dp)          // ← 아바타가 카드 안으로 들어오도록 공간 확보
+                .fillMaxWidth()
+                .height(230.dp)               // ← 카드 높이 증가 (필수)
+                .clip(RoundedCornerShape(24.dp))
+                .background(Color(0xFF1C1C1C)) // 좀 더 부드러운 어두운 회색
+                .padding(
+                    top = 70.dp,              // ← 아바타와 콘텐츠 간 간격
+                    start = 20.dp,
+                    end = 20.dp,
+                    bottom = 24.dp
+                ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             Text(
                 text = userName,
                 color = MainText,
                 style = Typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.Bold
             )
-            Spacer(Modifier.height(4.dp))
+
+            Spacer(Modifier.height(6.dp))
+
             Text(
                 text = email,
                 color = Gray,
                 style = Typography.bodySmall
             )
 
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(22.dp))
 
             OutlinedButton(
                 onClick = onLogout,
@@ -108,18 +79,63 @@ fun ProfileCard(
                     .fillMaxWidth()
                     .height(44.dp),
                 border = BorderStroke(1.dp, MainText),
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = Color.Transparent,
                     contentColor = MainText
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "Logout",
-                    style = Typography.bodyMedium,
-                    fontSize = 15.sp
                 )
+            ) {
+                Text("Logout", fontSize = 15.sp)
+            }
+        }
+
+        // 2️⃣ 핑크 링 + 프로필 아바타 (카드 위에 “완전히” 겹치기)
+        Box(
+            modifier = Modifier
+                .offset(y = 10.dp)            // ← 아바타를 카드 안쪽으로 더 내려서 완전히 겹침
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .background(
+                        Brush.radialGradient(
+                            listOf(
+                                PinkAccent.copy(alpha = 0.95f),
+                                PinkAccent.copy(alpha = 0.65f)
+                            )
+                        )
+                    )
+                    .shadow(12.dp, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(84.dp)
+                        .clip(CircleShape)
+                        .background(DarkBackground),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (profileImageUrl.isNullOrBlank()) {
+                        Icon(
+                            Icons.Default.Person,
+                            contentDescription = null,
+                            tint = MainText,
+                            modifier = Modifier.size(44.dp)
+                        )
+                    } else {
+                        AsyncImage(
+                            model = profileImageUrl,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(84.dp)
+                                .clip(CircleShape)
+                        )
+                    }
+                }
             }
         }
     }
 }
+
+
