@@ -138,7 +138,7 @@ fun SongPracticeContent(
 
         Button(
             onClick = {
-                navController.navigate("Pronunciation/$songId")
+                navController.navigate("pronunciation_test")
             },
             modifier = Modifier
                 .height(50.dp)

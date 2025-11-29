@@ -12,7 +12,7 @@ import androidx.lifecycle.AndroidViewModel
 import android.app.Application
 
 import com.example.practicsing.BuildConfig
-
+import android.util.Log
 
 private val ACCESS_KEY = BuildConfig.ETRI_KEY
 
@@ -85,9 +85,37 @@ class AsrViewModel(application: Application) : AndroidViewModel(application) {
         resultText = "evaluating..."
 
         viewModelScope.launch {
-            callPronunciation(accessKey, script)
+            // 1) PCM → WAV 변환
+            val pcm = buffer.toByteArray()
+            val wav = PcmToWav.pcmToWav(pcm)  // <<< 추가됨
+
+            // 2) Base64 인코딩
+            val base64 = Base64.encodeToString(wav, Base64.NO_WRAP)
+
+            // 3) ETRI 요청
+            val req = EtriRequest(
+                accessKey = accessKey,
+                argument = EtriArgument(
+                    languageCode = "korean",
+                    script = script,
+                    audio = base64
+                )
+            )
+
+            try {
+                val res = api.pronunciation(req)
+                val obj = res.returnObject
+
+                pronunciationResult = PronunciationResult(
+                    recognized = obj?.recognized ?: "",
+                    score = obj?.score ?: 0f
+                )
+            } catch (e: Exception) {
+                resultText = "오류: ${e.message}"
+            }
         }
     }
+
 
     private suspend fun callRecognition(accessKey: String) {
         // 다시 작성 // 
@@ -127,16 +155,42 @@ class AsrViewModel(application: Application) : AndroidViewModel(application) {
 
     fun testPronunciationFromFile(resId: Int, script: String) {
         viewModelScope.launch {
-            // 1) 파일 → byte array
-            val audioBytes = loadAudioFromRaw(resId)
+            try {
+                val wavData = loadAudioFromRaw(resId)
+                Log.d("ASR", "wavData size = ${wavData.size}")
 
-            // 2) 기존 buffer에 넣기
-            buffer.clear()
-            buffer.addAll(audioBytes.toList())
+                val pcmData = wavData.copyOfRange(44, wavData.size)
+                Log.d("ASR", "pcmData size = ${pcmData.size}")
 
-            // 3) callPronunciation 호출
-            resultText = "evaluating..."
-            callPronunciation(ACCESS_KEY, script)
+                val newWav = PcmToWav.pcmToWav(pcmData)
+
+                val base64 = Base64.encodeToString(newWav, Base64.NO_WRAP)
+                Log.d("ASR", "base64 length = ${base64.length}")
+
+                val req = EtriRequest(
+                    accessKey = ACCESS_KEY,
+                    argument = EtriArgument(
+                        languageCode = "korean",
+                        script = script,
+                        audio = base64
+                    )
+                )
+
+                resultText = "evaluating..."
+                val res = api.pronunciation(req)
+
+                val obj = res.returnObject
+                Log.d("ASR", "API returnObject = $obj")
+
+                pronunciationResult = PronunciationResult(
+                    recognized = obj?.recognized ?: "",
+                    score = obj?.score ?: 0f
+                )
+
+            } catch (e: Exception) {
+                Log.e("ASR", "API 오류", e)
+                resultText = "오류: ${e.localizedMessage}"
+            }
         }
     }
 

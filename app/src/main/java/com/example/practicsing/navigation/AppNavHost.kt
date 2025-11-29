@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import com.example.practicsing.ui.song.practice.TempScreen
 import com.example.practicsing.ui.song.practice.AsrScreen
+import com.example.practicsing.ui.song.Test.PronunciationTestScreen
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -80,6 +81,9 @@ fun AppNavHost(
             AsrScreen(currentLine = line)
         }
 
+        composable("pronunciation_test") {
+            PronunciationTestScreen()
+        }
 
 
         bottomNavGraph(navController = navController)
