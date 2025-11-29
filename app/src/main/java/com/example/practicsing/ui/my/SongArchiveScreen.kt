@@ -24,6 +24,7 @@ import com.example.practicsing.ui.my.components.SongArchivePreviewCard
 import com.example.practicsing.ui.my.viewmodel.SongArchiveViewModel
 import com.example.practicsing.ui.my.viewmodel.SongArchiveViewModelFactory
 import com.example.practicsing.data.repository.SongRepositoryImpl
+import com.example.practicsing.ui.common.RoundedBackButton
 
 @Composable
 fun SongArchiveScreen(
@@ -33,43 +34,63 @@ fun SongArchiveScreen(
     )
 ) {
     val records by viewModel.records.collectAsState()
-
-    // 현재 선택된 연습 기록 (플레이 카드로 띄울 대상)
     var selectedRecord by remember { mutableStateOf<PracticeRecord?>(null) }
 
-    AppScreenContainer(
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(DarkBackground)
+            .padding(20.dp)
     ) {
-
-        Spacer(Modifier.height(8.dp))
-
-        Text(
-            text = "Song Archive",
-            color = MainText,
-            style = Typography.headlineSmall
+        RoundedBackButton(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 16.dp),
+            onClick = { navController.popBackStack() }
         )
 
-        Spacer(Modifier.height(20.dp))
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+        Column(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            items(records) { record ->
-                SongArchivePreviewCard(
-                    title = record.songTitle,
-                    date = record.recordedDate,
-                    imageUrl = record.albumImageUrl,
-                    onClick = {
-                        selectedRecord = record
-                    }
+
+            Spacer(Modifier.height(8.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Song Archive",
+                    color = MainText,
+                    style = Typography.headlineSmall
                 )
+            }
+
+            Spacer(Modifier.height(20.dp))
+
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(records) { record ->
+                    SongArchivePreviewCard(
+                        title = record.songTitle,
+                        date = record.recordedDate,
+                        imageUrl = record.albumImageUrl,
+                        onClick = {
+                            selectedRecord = record
+                        }
+                    )
+                }
             }
         }
 
-        // 가운데 떠 있는 플레이 카드
+
         selectedRecord?.let { record ->
             ArchivePlayerDialog(
                 record = record,
@@ -88,5 +109,6 @@ fun SongArchiveScreen(
                 }
             )
         }
+
     }
 }

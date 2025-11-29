@@ -21,6 +21,7 @@ import com.example.practicsing.ui.my.components.SongArchivePreviewCard
 import com.example.practicsing.data.PracticePrefs
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.*
+import com.example.practicsing.ui.common.RoundedBackButton
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 @Composable
@@ -60,80 +61,89 @@ fun MyScreen(
 
     AppScreenContainer {
 
-        // 상태바와 겹치지 않게 살짝 아래로
-        Spacer(Modifier.height(8.dp))
+        Box(modifier = Modifier.fillMaxSize()) {
 
-        // 1. 타이틀
-        Text(
-            text = "Mypage",
-            color = MainText,
-            style = Typography.headlineSmall
-        )
 
-        Spacer(Modifier.height(24.dp))
+            RoundedBackButton(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = 16.dp, top = 16.dp),
+                onClick = { navController.popBackStack() }
+            )
 
-        //실제 로그인 정보 불러오기
-        ProfileCard(
-            userName = userName,
-            email = favoriteSinger,
-            profileImageUrl = null,
-            onLogout = {
-                val prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
-                with(prefs.edit()) {
-                    remove("userid")
-                    apply()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 56.dp)
+            ) {
+
+                Spacer(Modifier.height(8.dp))
+
+                Text(
+                    text = "Mypage",
+                    color = MainText,
+                    style = Typography.headlineSmall
+                )
+
+                Spacer(Modifier.height(24.dp))
+
+                ProfileCard(
+                    userName = userName,
+                    email = favoriteSinger,
+                    profileImageUrl = null,
+                    onLogout = {
+                        val prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+                        with(prefs.edit()) {
+                            remove("userid")
+                            apply()
+                        }
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Main.route) { inclusive = true }
+                        }
+                    }
+                )
+
+                Spacer(Modifier.height(24.dp))
+
+                DailyPracticeCard(
+                    dateLabel = "Today",
+                    streakCount = streak,
+                    totalSlots = 7,
+                    practicedToday = practicedToday
+                )
+
+                Spacer(Modifier.height(24.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Song Archive",
+                        color = MainText,
+                        style = Typography.bodyLarge
+                    )
+                    Text(
+                        text = ">",
+                        color = Gray,
+                        style = Typography.bodyLarge,
+                        modifier = Modifier.clickable {
+                            navController.navigate(Screen.SongArchive.route)
+                        }
+                    )
                 }
-                navController.navigate(Screen.Login.route) {
-                    popUpTo(Screen.Main.route) { inclusive = true }
-                }
+
+                Spacer(Modifier.height(12.dp))
+
+                SongArchivePreviewCard(
+                    title = "Without You",
+                    date = "2025.11.12",
+                    imageUrl = "https://picsum.photos/600/300",
+                    onClick = {}
+                )
             }
-        )
-
-
-        Spacer(Modifier.height(24.dp))
-
-        // 3. Daily Practice 카드
-        DailyPracticeCard(
-            dateLabel = "Today",
-            streakCount = streak,
-            totalSlots = 7,
-            practicedToday = practicedToday
-        )
-
-        Spacer(Modifier.height(24.dp))
-
-        // 4. Song Archive 헤더
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Song Archive",
-                color = MainText,
-                style = Typography.bodyLarge
-            )
-            Text(
-                text = ">",
-                color = Gray,
-                style = Typography.bodyLarge,
-                modifier = Modifier.clickable {
-                    // TODO: Archive 리스트 화면으로 이동
-                    navController.navigate(Screen.SongArchive.route)
-                }
-            )
         }
-
-        Spacer(Modifier.height(12.dp))
-
-        // 5. Song Archive 프리뷰
-        SongArchivePreviewCard(
-            title = "Without You",
-            date = "2025.11.12",
-            imageUrl = "https://picsum.photos/600/300",
-            onClick = {
-                // TODO: 해당 곡/녹음 상세로 이동
-            }
-        )
     }
+
 }
