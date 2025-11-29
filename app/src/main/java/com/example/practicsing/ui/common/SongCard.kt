@@ -22,14 +22,14 @@ import coil.compose.AsyncImage
 import com.example.practicsing.main.theme.Gray
 import com.example.practicsing.main.theme.MainText
 import com.example.practicsing.data.model.Song // Song 데이터 모델 사용
-
+import androidx.navigation.NavController
 @Composable
-fun SongCard(song: Song) {
+fun SongCard(song: Song,  navController: NavController) {
     Column(
         modifier = Modifier
             .width(150.dp)
             .padding(end = 12.dp)
-            .clickable { /* TODO: Song Detail로 이동 */ }
+            .clickable { navController.navigate("song_detail/${song.id}")}
     ) {
 
         AsyncImage(

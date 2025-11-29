@@ -168,7 +168,10 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel(), navController: NavControl
         Spacer(modifier = Modifier.height(20.dp))
 
         // 노래 리스트 (상태에 따라 표시)
-        SongList(songs = uiState.hotSongs)
+        SongList(
+            songs = uiState.hotSongs,
+            navController = navController
+        )
 
         Spacer(modifier = Modifier.height(30.dp))
 
@@ -209,16 +212,17 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel(), navController: NavControl
 // -------------------------------------------------------------
 
 @Composable
-fun SongList(songs: List<Song>) { // data.model.Song 타입 사용
-    LazyRow(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        // items() 확장 함수는 androidx.compose.foundation.lazy.items import 필요
+fun SongList(
+    songs: List<Song>,
+    navController: NavController
+) {
+    LazyRow(modifier = Modifier.fillMaxWidth()) {
         items(songs) { song ->
-            SongCard(song)
+            SongCard(song, navController)
         }
     }
 }
+
 
 @Composable
 fun RankList(ranks: List<HomeRankUi>) {
