@@ -9,7 +9,7 @@ import com.example.practicsing.ui.auth.RegisterScreen
 import com.example.practicsing.ui.splash.SplashScreen
 import com.example.practicsing.ui.search.SearchScreen
 import com.example.practicsing.ui.song.detail.SongDetailScreen
-import com.example.practicsing.ui.song.practice.SongPracticeContent
+import com.example.practicsing.ui.song.practice.SongPracticeScreen
 import com.example.practicsing.ui.song.practice.SongPlayerScreen
 import com.example.practicsing.ui.song.practice.PartPlayerScreen
 import androidx.compose.ui.Modifier
@@ -18,6 +18,8 @@ import com.example.practicsing.ui.song.practice.TempScreen
 import com.example.practicsing.ui.song.practice.AsrScreen
 import com.example.practicsing.ui.song.Test.PronunciationTestScreen
 import com.example.practicsing.ui.my.SongArchiveScreen
+import com.example.practicsing.ui.song.practice.component.PracticeSuccessScreen
+
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -52,7 +54,7 @@ fun AppNavHost(
 
         composable("SongPractice/{songId}") { backStackEntry ->
             val songId = backStackEntry.arguments?.getString("songId")!!
-            SongPracticeContent(
+            SongPracticeScreen(
                 songId = songId,
                 navController = navController
             )
@@ -88,6 +90,10 @@ fun AppNavHost(
 
         composable(Screen.SongArchive.route) {
             SongArchiveScreen(navController)
+        }
+
+        composable("practice_success") {
+            PracticeSuccessScreen(navController)
         }
 
 

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+
 }
 
 android {
@@ -82,6 +83,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
 
+
+
     // ------------------------------------------------------
     // Etc
     // ------------------------------------------------------
@@ -113,6 +116,7 @@ dependencies {
     //발음평가
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
 
 
 

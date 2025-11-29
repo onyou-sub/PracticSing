@@ -1,12 +1,10 @@
-package com.example.practicsing.ui.song.practice
+package com.example.practicsing.ui.song.practice.component
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.media3.exoplayer.ExoPlayer
-import kotlinx.coroutines.delay
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.shape.*
@@ -16,17 +14,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import com.example.practicsing.main.theme.PinkAccent
-import androidx.media3.common.Player
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.gestures.detectTapGestures
 import com.example.practicsing.data.model.Song
 import coil.compose.AsyncImage
-import androidx.compose.runtime.saveable.rememberSaveable
 import com.google.firebase.firestore.FirebaseFirestore
-import androidx.compose.foundation.lazy.*
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
 fun formatTime(millis: Long): String {
     val totalSeconds = millis / 1000
     val minutes = totalSeconds / 60
@@ -103,6 +99,27 @@ fun PlayPauseButton(
         )
     }
 }
+
+@Composable
+fun RecordButton(
+    isRecording: Boolean,
+    onClick: () -> Unit
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .background(if (isRecording) Color.Red else Color.DarkGray)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Mic,
+            contentDescription = null,
+            tint = Color.White
+        )
+    }
+}
+
 
 @Composable
 fun LyricTabSelector(
@@ -211,4 +228,3 @@ fun LyricsScreen(song: Song) {
         )
     }
 }
-
