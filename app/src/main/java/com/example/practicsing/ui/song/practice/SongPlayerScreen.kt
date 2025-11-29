@@ -238,11 +238,13 @@ fun SongPlayerScreen(
                 }
 
                 "Kor" -> {
-                    LyricsScreen(song = song)
+                    LyricsScreen(song = song, "Kor")
                 }
 
                 "Eng" -> {
-                    // TO DO //
+
+                    LyricsScreen(song = song, "Eng")
+
                 }
             }
 

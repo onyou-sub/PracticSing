@@ -184,7 +184,7 @@ data class LyricsLine(
 )
 
 @Composable
-fun LyricsScreen(song: Song) {
+fun LyricsScreen(song: Song, lan: String) {
 
     val db = FirebaseFirestore.getInstance()
 
@@ -192,39 +192,80 @@ fun LyricsScreen(song: Song) {
     var title by remember { mutableStateOf("") }
 
     // Firestore 불러오기
-    LaunchedEffect(song) {
-        db.collection("lyrics")
-            .document(song.filename)
-            .get()
-            .addOnSuccessListener { doc ->
-                lyrics = doc.getString("lyrics") ?: "가사를 찾을 수 없습니다."
-                title = doc.getString("title") ?: song.title
-            }
-            .addOnFailureListener {
-                lyrics = "가사 불러오기 실패"
-            }
+    if (lan == "Kor"){
+        LaunchedEffect(song) {
+            db.collection("lyrics")
+                .document(song.filename)
+                .get()
+                .addOnSuccessListener { doc ->
+                    lyrics = doc.getString("lyrics_korean") ?: "가사를 찾을 수 없습니다."
+                    title = doc.getString("title") ?: song.title
+                }
+                .addOnFailureListener {
+                    lyrics = "가사 불러오기 실패"
+                }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+
+
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 10.dp)
+            )
+
+
+            Text(
+                text = lyrics,
+                color = Color(0xCCFFFFFF),
+                fontSize = 18.sp
+            )
+        }
+
+    }
+    else if(lan =="Eng"){
+        LaunchedEffect(song) {
+            db.collection("lyrics")
+                .document(song.filename)
+                .get()
+                .addOnSuccessListener { doc ->
+                    lyrics = doc.getString("lyrics_english") ?: "가사를 찾을 수 없습니다."
+                    title = doc.getString("title") ?: song.title
+                }
+                .addOnFailureListener {
+                    lyrics = "가사 불러오기 실패"
+                }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+
+
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 10.dp)
+            )
+
+
+            Text(
+                text = lyrics,
+                color = Color(0xCCFFFFFF),
+                fontSize = 18.sp
+            )
+        }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-
-
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            color = Color.White,
-            modifier = Modifier.padding(bottom = 10.dp)
-        )
-
-
-        Text(
-            text = lyrics,
-            color = Color(0xCCFFFFFF),
-            fontSize = 18.sp
-        )
-    }
 }
