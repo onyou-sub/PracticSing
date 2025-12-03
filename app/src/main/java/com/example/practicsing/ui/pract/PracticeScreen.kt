@@ -17,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.google.gson.Gson
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -46,7 +47,13 @@ import java.io.File
 import kotlin.math.abs
 
 import com.example.practicsing.data.PracticePrefs
+
+import com.example.practicsing.data.etri.runEtriRecording
+import com.google.gson.annotations.SerializedName
+
 import kotlinx.coroutines.*
+import kotlin.math.ceil
+
 // -----------------------------
 //  Practice Step Enum
 // -----------------------------
@@ -520,7 +527,7 @@ fun TonePitchScreen(
                 val isCorrectNote = notePitch?.name == targetNotes[currentNoteIndex]
                 if (isCorrectNote) {
                     sustainedTime += 100
-                    countdown = kotlin.math.ceil((requiredSustainedTime - sustainedTime) / 1000f).toInt().coerceAtLeast(0)
+                    countdown = ceil((requiredSustainedTime - sustainedTime) / 1000f).toInt().coerceAtLeast(0)
                 } else {
                     sustainedTime = 0
                     countdown = 5
@@ -661,9 +668,17 @@ fun loadWavFromRaw(context: Context, resId: Int): FloatArray {
 
     return floats
 }
-
 @Composable
-fun PronunciationScreen(onFinish: () -> Unit){
+fun PronunciationScreen(onFinish: () -> Unit) {
+
+    val context = LocalContext.current
+
+    var isRecording by remember { mutableStateOf(false) }
+    var etriResult by remember { mutableStateOf<String?>(null) }
+    var score by remember { mutableStateOf<String?>(null) }
+
+    val userScript = remember { mutableStateOf("잘했어요 계속하세요") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -675,6 +690,7 @@ fun PronunciationScreen(onFinish: () -> Unit){
             currentStep = 3,
             totalSteps = 3
         )
+
         Column(modifier = Modifier.padding(30.dp)) {
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -685,11 +701,101 @@ fun PronunciationScreen(onFinish: () -> Unit){
                 description1 = "Correct difficult Korean sounds,",
                 description2 = "and practice the natural flow(intonation)."
             )
-            // to fix this error ,use actual phone ?
-            YouTubePlayer(videoId = "aqz-KE-bpKQ")
 
-            Spacer(modifier = Modifier.height(100.dp))
-            FinishButton(onFinish)
+            Spacer(modifier = Modifier.height(40.dp))
+
+
+            Text(
+                text = "Say this:",
+                color = Color.Gray,
+                fontSize = 16.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.DarkGray, RoundedCornerShape(8.dp))
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = userScript.value,
+                    color = Color.White,
+                    fontSize = 20.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+
+            Button(
+                onClick = {
+                    isRecording = true
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val result = runEtriRecording(context, script = userScript.value)
+                        etriResult = result
+
+                        // Parse JSON to extract score
+                        try {
+                            val gson = Gson()
+                            val parsed = gson.fromJson(result, EtriResponse::class.java)
+                            score = parsed.returnObject?.score
+                        } catch (e: Exception) {
+                            score = null
+                        }
+
+                        isRecording = false
+                        Log.d("ETRI_COMPOSE", "ETRI Result: $result")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = PinkAccent)
+            ) {
+                Text(if (isRecording) "Recording…" else "Record")
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+
+            etriResult?.let {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "ETRI Result Ready!",
+                        color = Color.Green,
+                        fontSize = 18.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Score: ${score ?: "N/A"}",
+                        color = Color.Yellow,
+                        fontSize = 20.sp
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Button(
+                        onClick = { onFinish() },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = PinkAccent)
+                    ) {
+                        Text("Finish")
+
+                    }
+                }
+            }
         }
     }
 }
+
+// ------------------------
+// Data class for parsing
+// ------------------------
+data class EtriResponse(
+    @SerializedName("request_id") val requestId: String?,
+    @SerializedName("result") val result: Int?,
+    @SerializedName("return_type") val returnType: String?,
+    @SerializedName("return_object") val returnObject: ReturnObject?
+)
+
+data class ReturnObject(
+    @SerializedName("recognized") val recognized: String?,
+    @SerializedName("score") val score: String?
+)

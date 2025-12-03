@@ -121,4 +121,10 @@ dependencies {
     // 발음평가
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
+    implementation ("com.android.support.constraint:constraint-layout:1.0.2")
+    implementation( "commons-lang:commons-lang:2.6")
+
+
 }
