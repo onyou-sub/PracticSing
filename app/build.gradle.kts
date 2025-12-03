@@ -50,7 +50,15 @@ dependencies {
     // ------------------------------------------------------
     // ⭐ Compose BOM (핵심)
     // ------------------------------------------------------
-    implementation(platform("androidx.compose:compose-bom:2024.10.00"))
+    val composeBom = platform("androidx.compose:compose-bom:2024.10.00")
+
+    implementation(composeBom)
+
+    // (선택) unit test에서도 Compose 쓰면
+    testImplementation(composeBom)
+
+    // androidTest에서도 BOM 같이 사용
+    androidTestImplementation(composeBom)
 
     // Compose (버전 자동 관리됨)
     implementation("androidx.compose.ui:ui")
@@ -83,15 +91,11 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
 
-
-
     // ------------------------------------------------------
     // Etc
     // ------------------------------------------------------
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
-
-    // 유튜브 플레이어
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:11.1.0")
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ink.brush)
@@ -109,15 +113,12 @@ dependencies {
     // ------------------------------------------------------
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-    //무료 노래 재생
+
+    // 무료 노래 재생
     implementation("androidx.media3:media3-exoplayer:1.3.1")
     implementation("androidx.media3:media3-ui:1.3.1")
 
-    //발음평가
+    // 발음평가
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
-
-
-
 }
