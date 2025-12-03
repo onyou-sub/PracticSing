@@ -130,7 +130,12 @@ fun MyScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // Daily Practice - streak + 동그라미 체크들
+            LaunchedEffect(Unit) {
+                practicedToday = PracticePrefs.didPracticeToday(context)
+                streak = PracticePrefs.getCurrentDay(context)
+            }
+
+
             DailyPracticeCard(
                 dateLabel = "Today",
                 streakCount = streak,
