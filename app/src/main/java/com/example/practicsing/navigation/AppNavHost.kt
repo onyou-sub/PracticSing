@@ -19,7 +19,7 @@ import com.example.practicsing.ui.song.practice.AsrScreen
 import com.example.practicsing.ui.song.Test.PronunciationTestScreen
 import com.example.practicsing.ui.my.SongArchiveScreen
 import com.example.practicsing.ui.song.practice.component.PracticeSuccessScreen
-
+import com.example.practicsing.ui.diary.DiaryScreen
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -94,6 +94,10 @@ fun AppNavHost(
 
         composable("practice_success") {
             PracticeSuccessScreen(navController)
+        }
+
+        composable( "diary") {
+            DiaryScreen(navController = navController)
         }
 
 

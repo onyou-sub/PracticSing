@@ -204,7 +204,52 @@ fun MyScreen(
                         )
                     }
                 }
+
+
+
+
             }
+            Spacer(Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "My Diary",
+                        color = MainText,
+                        style = Typography.bodyLarge
+                    )
+                    Text(
+                        text = "Write your daily practice",
+                        color = Gray,
+                        style = Typography.bodySmall
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable {
+                        navController.navigate("diary")
+                    }
+                ) {
+                    Text(
+                        text = "Go",
+                        color = Gray,
+                        style = Typography.bodyMedium
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Icon(
+                        imageVector = Icons.Filled.ChevronRight,
+                        contentDescription = "Go to Diary",
+                        tint = Gray
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
         }
     }
 }
