@@ -14,12 +14,13 @@ import com.example.practicsing.ui.song.practice.SongPlayerScreen
 import com.example.practicsing.ui.song.practice.PartPlayerScreen
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
+import com.example.practicsing.ui.diary.DiaryListScreen
 import com.example.practicsing.ui.song.practice.TempScreen
 import com.example.practicsing.ui.song.practice.AsrScreen
 import com.example.practicsing.ui.song.Test.PronunciationTestScreen
 import com.example.practicsing.ui.my.SongArchiveScreen
 import com.example.practicsing.ui.song.practice.component.PracticeSuccessScreen
-import com.example.practicsing.ui.diary.DiaryScreen
+import com.example.practicsing.ui.diary.DiaryWriteScreen
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -96,8 +97,14 @@ fun AppNavHost(
             PracticeSuccessScreen(navController)
         }
 
-        composable( "diary") {
-            DiaryScreen(navController = navController)
+
+
+        composable( "diary_list") {
+            DiaryListScreen(navController = navController)
+        }
+
+        composable( "diary_write") {
+            DiaryWriteScreen(navController = navController)
         }
 
 

@@ -4,13 +4,17 @@ import com.example.practicsing.data.model.Diary
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-class DiaryRepository {
+class DiaryRepository(
+    private val userId: String   // login id
+) {
 
     private val db = FirebaseFirestore.getInstance()
-    private val userId = "TEST_USER"   // -> 로그인 기능 있으면 UID로 변경
 
     private fun diaryCollection() =
-        db.collection("users").document(userId).collection("diary")
+        db.collection("users")
+            .document(userId)
+            .collection("diary")
+
 
     // CREATE
     suspend fun addDiary(diary: Diary) {
@@ -19,7 +23,7 @@ class DiaryRepository {
         newDoc.set(diaryWithId).await()
     }
 
-    // READ (모든 일기)
+    // READ
     suspend fun getAllDiary(): List<Diary> {
         return diaryCollection()
             .orderBy("date")

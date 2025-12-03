@@ -105,7 +105,7 @@ fun MyScreen(
 
             if (userName.isNotBlank()) {
                 Text(
-                    text = "$userName 님, 오늘도 연습해볼까요?",
+                    text = "$userName, Shall we practice again today?",
                     color = Gray,
                     style = Typography.bodyMedium
                 )
@@ -232,7 +232,7 @@ fun MyScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.clickable {
-                        navController.navigate("diary")
+                        navController.navigate("diary_list")
                     }
                 ) {
                     Text(

@@ -2,15 +2,14 @@ package com.example.practicsing.ui.my.diary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.practicsing.ui.diary.DiaryScreen
 import com.example.practicsing.data.model.Diary
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class DiaryViewModel : ViewModel() {
+class DiaryViewModel(private val userId: String) : ViewModel() {
 
-    private val repo = DiaryRepository()
+    private val repo = DiaryRepository(userId)
 
     private val _diaryList = MutableStateFlow<List<Diary>>(emptyList())
     val diaryList: StateFlow<List<Diary>> = _diaryList
@@ -27,12 +26,7 @@ class DiaryViewModel : ViewModel() {
 
     fun addDiary(title: String, content: String) {
         viewModelScope.launch {
-            repo.addDiary(
-                Diary(
-                    title = title,
-                    content = content
-                )
-            )
+            repo.addDiary(Diary(title = title, content = content))
             loadDiaries()
         }
     }
