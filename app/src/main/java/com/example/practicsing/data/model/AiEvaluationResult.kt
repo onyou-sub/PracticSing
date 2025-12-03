@@ -1,12 +1,26 @@
 package com.example.practicsing.data.model
 
+// 기본 값이 없어서 앱이 무한 로딩하는 문제
+// 기본 데이터 넣어두기
+
 data class AiEvaluationResult(
-    val songTitle: String,        // 노래 제목
-    val artist: String,           // 아티스트
-    val albumImageUrl: String,    // 앨범 커버 이미지
-    val recordingUrl: String,     // 내가 부른 녹음 파일 URL or local path
-    val durationText: String,     // "3:44" 이런 형식
-    val score: Int,               // AI 점수 (0~100)
-    val strengthComment: String,  // 좋은 점 피드백
-    val weaknessComment: String   // 개선점 피드백
+    val id: String = "",
+    val userId: String = "",
+    val songId: String = "",
+
+    val songTitle: String = "",
+    val artist: String = "",
+    val albumImageUrl: String = "",
+    val recordingUrl: String = "",
+
+    val startPositionSec: Int = 0,
+    val endPositionSec: Int = 0,
+
+    val practicedAtMillis: Long = 0L,
+    val practicedDateText: String = "",
+
+    val durationText: String = "",
+    val score: Int = 0,
+    val strengthComment: String = "",
+    val weaknessComment: String = ""
 )

@@ -29,7 +29,6 @@ import androidx.compose.foundation.BorderStroke
 @Composable
 fun ProfileCard(
     userName: String,
-    email: String,
     profileImageUrl: String? = null,
     onLogout: () -> Unit
 ) {
@@ -61,14 +60,6 @@ fun ProfileCard(
                 color = MainText,
                 style = Typography.bodyLarge,
                 fontWeight = FontWeight.Bold
-            )
-
-            Spacer(Modifier.height(6.dp))
-
-            Text(
-                text = email,
-                color = Gray,
-                style = Typography.bodySmall
             )
 
             Spacer(Modifier.height(22.dp))
