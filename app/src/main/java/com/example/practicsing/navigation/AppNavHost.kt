@@ -75,14 +75,9 @@ fun AppNavHost(
 
 
 
-        composable(route = "pronunciation_test/{songId}") { backStackEntry ->
-
+        composable("pronunciationTest/{songId}") { backStackEntry ->
             val songId = backStackEntry.arguments?.getString("songId") ?: ""
-
-            PronunciationTestScreen(
-                songId = songId,
-                navController = navController
-            )
+            PronunciationTestScreen(navController, songId)
         }
 
 

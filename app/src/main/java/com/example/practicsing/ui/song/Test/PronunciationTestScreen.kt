@@ -1,76 +1,87 @@
 package com.example.practicsing.ui.song.Test
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.practicsing.viewmodel.AsrViewModel
 import com.example.practicsing.R
-
+import com.example.practicsing.main.theme.DarkBackground
+import com.example.practicsing.main.theme.MainText
+import com.example.practicsing.ui.common.RoundedBackButton
+import com.example.practicsing.ui.song.Test.tts.TTSProvider
 @Composable
 fun PronunciationTestScreen(
+    navController: NavController,
+    songId: String,
     viewModel: AsrViewModel = viewModel()
 ) {
-    var script by remember { mutableStateOf("") }
 
-    Column(
+    val chorusLines by viewModel.mainLyrics
+
+    val chorusLineses = listOf(
+        "달려가고 있어",
+        "날 굳이 막지 말아",
+        "손끝으로 세상을 두드려",
+        "문이 열려 서로의 존재를 느껴"
+    )
+
+
+
+
+    LaunchedEffect(songId) {
+        viewModel.loadMainLyrics(songId)
+    }
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+            .background(DarkBackground)
+            .padding(20.dp)
     ) {
-        Text("input sentences:", style = MaterialTheme.typography.titleMedium)
 
-        OutlinedTextField(
-            value = script,
-            onValueChange = { script = it },
-            modifier = Modifier.fillMaxWidth()
+        RoundedBackButton(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 16.dp),
+            onClick = { navController.popBackStack() }
         )
 
-
-        Button(
-            onClick = {
-                if (script.isNotBlank()) {
-                    viewModel.speakKorean(script)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 70.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Text("listen the sentence")
-        }
+
+            Text(
+                "Choose a line to listen:",
+                style = MaterialTheme.typography.titleMedium,
+                color = MainText
+            )
 
 
-        Button(
-            onClick = {
-                if (script.isNotBlank()) {
-                    viewModel.testPronunciationFromFile(
-                        resId = R.raw.test_audio_16k,
-                        script = script
-                    )
+            chorusLineses.forEach { line ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            TTSProvider.speak(line)
+                        },
+                    elevation = CardDefaults.cardElevation(4.dp)
+                ) {
+                    Box(modifier = Modifier.padding(16.dp)) {
+                        Text(line)
+                    }
                 }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("WAV file")
-        }
+            }
 
-
-        Spacer(Modifier.height(20.dp))
-
-        Text(
-            "평가 결과:",
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        val result = viewModel.pronunciationResult
-
-        if (result != null) {
-            Text("sentences: ${result.recognized}")
-            Text("score: ${result.score}")
-        } else {
-            Text("Not Yet.")
         }
     }
 }

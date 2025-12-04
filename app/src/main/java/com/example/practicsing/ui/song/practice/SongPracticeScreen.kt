@@ -134,11 +134,11 @@ fun SongPracticeScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(25.dp))
 
         Button(
             onClick = {
-                navController.navigate("pronunciation_test")
+                navController.navigate("pronunciationTest/{songId}")
             },
             modifier = Modifier
                 .height(50.dp)
@@ -151,7 +151,7 @@ fun SongPracticeScreen(
 
         ) {
             Text(
-                "Test button",
+                "listen the korean pronunciation",
                 style = MaterialTheme.typography.bodyMedium,
             )
         }

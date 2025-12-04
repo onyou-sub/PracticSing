@@ -14,11 +14,13 @@ import com.example.practicsing.navigation.Screen
 import com.example.practicsing.main.theme.PracticSingTheme
 
 import androidx.compose.foundation.layout.padding
+import com.example.practicsing.ui.song.Test.tts.TTSProvider
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        TTSProvider.initialize(this)
 
         setContent {
             PracticSingTheme {
@@ -34,6 +36,7 @@ class MainActivity : ComponentActivity() {
                     Screen.Register.route
                 )
 
+
                 Scaffold(
                     bottomBar = {
                         if (!hideBottomBar) {
@@ -48,5 +51,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        TTSProvider.shutdown()
     }
 }
