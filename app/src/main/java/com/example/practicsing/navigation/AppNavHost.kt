@@ -15,12 +15,11 @@ import com.example.practicsing.ui.song.practice.PartPlayerScreen
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import com.example.practicsing.ui.diary.DiaryListScreen
-import com.example.practicsing.ui.song.practice.TempScreen
-import com.example.practicsing.ui.song.practice.AsrScreen
 import com.example.practicsing.ui.song.Test.PronunciationTestScreen
 import com.example.practicsing.ui.my.SongArchiveScreen
 import com.example.practicsing.ui.song.practice.component.PracticeSuccessScreen
 import com.example.practicsing.ui.diary.DiaryWriteScreen
+import com.example.practicsing.ui.diary.DiaryEditScreen
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -72,22 +71,20 @@ fun AppNavHost(
             PartPlayerScreen(songId = songId, navController = navController)
         }
 
-        composable("Pronunciation/{songId}") { backStackEntry ->
+
+
+
+
+        composable(route = "pronunciation_test/{songId}") { backStackEntry ->
+
             val songId = backStackEntry.arguments?.getString("songId") ?: ""
-            TempScreen(songId = songId, navController = navController)
+
+            PronunciationTestScreen(
+                songId = songId,
+                navController = navController
+            )
         }
 
-        composable(
-            route = "asr_screen/{line}",
-            arguments = listOf(navArgument("line") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val line = backStackEntry.arguments?.getString("line") ?: ""
-            AsrScreen(currentLine = line)
-        }
-
-        composable("pronunciation_test") {
-            PronunciationTestScreen()
-        }
 
         composable(Screen.SongArchive.route) {
             SongArchiveScreen(navController)
@@ -107,6 +104,26 @@ fun AppNavHost(
             DiaryWriteScreen(navController = navController)
         }
 
+        composable(
+            route = "diary_edit/{id}/{title}/{content}",
+            arguments = listOf(
+                navArgument("id") { type = NavType.StringType },
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+
+            DiaryEditScreen(
+                navController = navController,
+                diaryId = id,
+                encodedTitle = title,
+                encodedContent = content
+            )
+        }
 
         bottomNavGraph(navController = navController)
     }

@@ -41,8 +41,8 @@ fun BottomNavigationBar(navController: NavHostController) {
                 selected = selected,
                 onClick = {
                     navController.navigate(item.route) {
-                        popUpTo(Screen.Home.route) { saveState = true }
-                        restoreState = true
+                        popUpTo(Screen.Home.route) { saveState = false }
+                        restoreState = false
                         launchSingleTop = true
                     }
                 },

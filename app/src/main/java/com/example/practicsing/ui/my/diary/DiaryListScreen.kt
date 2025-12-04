@@ -25,7 +25,7 @@ import com.example.practicsing.main.theme.BasePink
 import com.example.practicsing.main.theme.Pink40
 import com.example.practicsing.main.theme.Pink80
 import com.example.practicsing.main.theme.PinkAccent
-
+import android.net.Uri
 @Composable
 fun DiaryListScreen(
     navController: NavController
@@ -95,6 +95,15 @@ fun DiaryListScreen(
                         onDelete = { id ->
                             targetDiaryId = id
                             showDeleteDialog = true
+                        },
+                        onEdit = { selectedDiary ->
+
+                            val encodedTitle = Uri.encode(selectedDiary.title)
+                            val encodedContent = Uri.encode(selectedDiary.content)
+
+                            navController.navigate(
+                                "diary_edit/${selectedDiary.id}/${encodedTitle}/${encodedContent}"
+                            )
                         }
                     )
 
@@ -157,11 +166,16 @@ fun DiaryListScreen(
     }
 }
 
+fun formatDate(timestamp: Long): String {
+    val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault())
+    return sdf.format(java.util.Date(timestamp))
+}
 
 @Composable
 fun DiaryListItem(
     diary: Diary,
-    onDelete: (String) -> Unit
+    onDelete: (String) -> Unit,
+    onEdit: (Diary) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -209,11 +223,21 @@ fun DiaryListItem(
                 style = Typography.bodyMedium,
                 modifier = Modifier.clickable { onDelete(diary.id) }
             )
-        }
-    }
-}
+            Spacer(Modifier.width(10.dp))
 
-fun formatDate(timestamp: Long): String {
-    val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault())
-    return sdf.format(java.util.Date(timestamp))
+            Text(
+                text = "Update",
+                color = BasePink,
+                style = Typography.bodyMedium,
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .clickable { onEdit(diary) }
+            )
+        }
+
+
+
+    }
+
+
 }
