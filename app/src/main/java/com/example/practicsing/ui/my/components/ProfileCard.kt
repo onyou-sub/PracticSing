@@ -26,11 +26,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.BorderStroke
 
+// file: ProfileCard.kt
 @Composable
 fun ProfileCard(
     userName: String,
     profileImageUrl: String? = null,
-    onLogout: () -> Unit
+    onDiaryClick: () -> Unit
 ) {
 
     Box(
@@ -38,23 +39,24 @@ fun ProfileCard(
         contentAlignment = Alignment.TopCenter
     ) {
 
-        // 1️⃣ 회색 카드(프레임)
+        // 회색 카드 영역
         Column(
             modifier = Modifier
-                .padding(top = 60.dp)          // ← 아바타가 카드 안으로 들어오도록 공간 확보
+                .padding(top = 60.dp)
                 .fillMaxWidth()
-                .height(230.dp)               // ← 카드 높이 증가 (필수)
+                .wrapContentHeight() // ❗ 높이를 자동 맞추게 변경
                 .clip(RoundedCornerShape(24.dp))
-                .background(Color(0xFF1C1C1C)) // 좀 더 부드러운 어두운 회색
+                .background(Color(0xFF1C1C1C))
                 .padding(
-                    top = 70.dp,              // ← 아바타와 콘텐츠 간 간격
+                    top = 70.dp,
                     start = 20.dp,
                     end = 20.dp,
-                    bottom = 24.dp
+                    bottom = 20.dp // 🔽 기존보다 작게(24 → 20)
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            // 유저 이름
             Text(
                 text = userName,
                 color = MainText,
@@ -62,28 +64,30 @@ fun ProfileCard(
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(Modifier.height(22.dp))
+            Spacer(Modifier.height(20.dp))
 
-            OutlinedButton(
-                onClick = onLogout,
+            // 🔥 핑크색 꽉 찬 버튼: Singing Diary
+            Button(
+                onClick = onDiaryClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp),
-                border = BorderStroke(1.dp, MainText),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = MainText
+                    .height(50.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = PinkAccent,
+                    contentColor = Color.White
                 )
             ) {
-                Text("Logout", fontSize = 15.sp)
+                Text(
+                    text = "My Diary",
+                    style = Typography.labelLarge
+                )
             }
         }
 
-        // 2️⃣ 핑크 링 + 프로필 아바타 (카드 위에 “완전히” 겹치기)
+        // 아바타
         Box(
-            modifier = Modifier
-                .offset(y = 10.dp)            // ← 아바타를 카드 안쪽으로 더 내려서 완전히 겹침
+            modifier = Modifier.offset(y = 10.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -128,5 +132,3 @@ fun ProfileCard(
         }
     }
 }
-
-

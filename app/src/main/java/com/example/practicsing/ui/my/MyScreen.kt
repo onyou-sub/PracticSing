@@ -3,9 +3,11 @@ package com.example.practicsing.ui.my
 import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,11 +18,14 @@ import androidx.navigation.NavController
 import com.example.practicsing.data.PracticePrefs
 import com.example.practicsing.data.model.AiEvaluationResult
 import com.example.practicsing.data.repository.EvaluationRepository
+import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.Gray
 import com.example.practicsing.main.theme.MainText
+import com.example.practicsing.main.theme.PinkAccent
 import com.example.practicsing.main.theme.Typography
 import com.example.practicsing.navigation.Screen
 import com.example.practicsing.ui.common.AppScreenContainer
+import com.example.practicsing.ui.common.PracticeSingModal
 import com.example.practicsing.ui.my.components.DailyPracticeCard
 import com.example.practicsing.ui.my.components.ProfileCard
 import com.example.practicsing.ui.my.components.SongArchivePreviewCard
@@ -33,21 +38,22 @@ fun MyScreen(
 ) {
     val context = LocalContext.current
 
-    // 로그인 유저 ID
-    val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
+    val prefs = remember {
+        context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+    }
     val savedUserId = remember { prefs.getString("userid", null) }
 
-    // Practice 상태 (오늘 했는지 / 연속 일수)
     var practicedToday by remember { mutableStateOf(false) }
     var streak by remember { mutableStateOf(1) }
 
-    // 유저 이름 / 연습 히스토리
     var userName by remember { mutableStateOf("") }
     var history by remember { mutableStateOf<List<AiEvaluationResult>>(emptyList()) }
 
     val evaluationRepository = remember { EvaluationRepository() }
 
-    // 🔹 Firestore에서 유저 이름 + 평가 기록 불러오기
+    // Logout 모달 표시 여부
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(savedUserId) {
         if (savedUserId != null) {
             try {
@@ -60,15 +66,11 @@ fun MyScreen(
                     .await()
 
                 userName = userSnapshot.getString("Name") ?: ""
-
                 history = evaluationRepository.getUserEvaluationHistory(savedUserId)
-            } catch (e: Exception) {
-                // TODO: 필요하면 Log.e 찍기
-            }
+            } catch (_: Exception) {}
         }
     }
 
-    // 🔹 PracticePrefs에서 오늘 연습 여부 & 연속 일수 불러오기
     LaunchedEffect(Unit) {
         practicedToday = PracticePrefs.hasPracticedToday(context)
         streak = PracticePrefs.getCurrentDay(context)
@@ -78,32 +80,145 @@ fun MyScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 24.dp)
+                .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
-            // 상단 타이틀
+
+            // ---------- My Page Header ----------
             Text(
                 text = "My Page",
                 color = MainText,
                 style = Typography.headlineSmall
             )
 
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(20.dp))
 
-            if (userName.isNotBlank()) {
+            // ---------- Profile Card (버튼 = My Diary) ----------
+            ProfileCard(
+                userName = userName,
+                profileImageUrl = null,
+                onDiaryClick = {
+                    navController.navigate("diary_list")
+                }
+            )
+
+            Spacer(Modifier.height(24.dp))
+
+            // ---------- Daily Practice ----------
+            DailyPracticeCard(
+                dateLabel = "Today",
+                streakCount = streak,
+                totalSlots = 7,
+                practicedToday = practicedToday
+            )
+
+            Spacer(Modifier.height(28.dp))
+
+            // ---------- Song Archive (div 박스) ----------
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(18.dp),
+                color = DarkBackground.copy(alpha = 0.7f)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 20.dp)
+                ) {
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "Song Archive",
+                                color = MainText,
+                                style = Typography.bodyLarge
+                            )
+                            Text(
+                                text = "The songs I've tried",
+                                color = Gray,
+                                style = Typography.bodySmall
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier.clickable {
+                                navController.navigate(Screen.SongArchive.route)
+                            },
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("See all", color = Gray, style = Typography.bodyMedium)
+                            Spacer(Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Filled.ChevronRight,
+                                contentDescription = null,
+                                tint = Gray
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+
+                    if (history.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(80.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No Songs Tried Yet.",
+                                color = Gray,
+                                style = Typography.bodySmall
+                            )
+                        }
+                    } else {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            history.take(3).forEach { item ->
+                                SongArchivePreviewCard(
+                                    title = item.songTitle,
+                                    date = item.practicedDateText.ifBlank { item.durationText },
+                                    imageUrl = item.albumImageUrl,
+                                    onClick = {
+                                        navController.navigate("evaluationDetail/${item.id}")
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 아래 공간 밀기
+            Spacer(Modifier.weight(1f))
+
+            // ---------- Logout (왼쪽 정렬 + 이모지 + 모달 호출) ----------
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
+                    .clickable { showLogoutDialog = true },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    text = "$userName, Shall we practice again today?",
+                    text = "Logout",
                     color = Gray,
                     style = Typography.bodyMedium
                 )
             }
 
-            Spacer(Modifier.height(24.dp))
-
-            // 프로필 카드
-            ProfileCard(
-                userName = userName,
-                profileImageUrl = null,
-                onLogout = {
+            // ---------- Logout Modal ----------
+            PracticeSingModal(
+                visible = showLogoutDialog,
+                emoji = "😅",
+                title = "Are you sure to logout?",
+                subtitle = "Hope to see you again.",
+                buttonText = "Logout",
+                onDismissRequest = { showLogoutDialog = false },
+                onButtonClick = {
+                    showLogoutDialog = false
                     with(prefs.edit()) {
                         remove("userid")
                         apply()
@@ -113,126 +228,6 @@ fun MyScreen(
                     }
                 }
             )
-
-            Spacer(Modifier.height(24.dp))
-
-            // 🔹 오늘 연습 여부 + 연속 일수 보여주는 카드
-            DailyPracticeCard(
-                dateLabel = "Today",
-                streakCount = streak,
-                totalSlots = 7,
-                practicedToday = practicedToday
-            )
-
-            Spacer(Modifier.height(32.dp))
-
-            // Song Archive 헤더
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = "Song Archive",
-                        color = MainText,
-                        style = Typography.bodyLarge
-                    )
-                    Text(
-                        text = "The songs I've tried",
-                        color = Gray,
-                        style = Typography.bodySmall
-                    )
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable {
-                        navController.navigate(Screen.SongArchive.route)
-                    }
-                ) {
-                    Text(
-                        text = "See all",
-                        color = Gray,
-                        style = Typography.bodyMedium
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Filled.ChevronRight,
-                        contentDescription = "Go to Song Archive",
-                        tint = Gray
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            // 실제 이 유저가 부른 노래들만 미리보기로 표시
-            if (history.isEmpty()) {
-                Text(
-                    text = "No Songs Tried Yet.",
-                    color = Gray,
-                    style = Typography.bodySmall
-                )
-            } else {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    history.take(5).forEach { item ->
-                        SongArchivePreviewCard(
-                            title = item.songTitle,
-                            date = item.practicedDateText.ifBlank { item.durationText },
-                            imageUrl = item.albumImageUrl,
-                            onClick = {
-                                navController.navigate("evaluationDetail/${item.id}")
-                            }
-                        )
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            // Diary 섹션
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = "My Diary",
-                        color = MainText,
-                        style = Typography.bodyLarge
-                    )
-                    Text(
-                        text = "Write your daily practice",
-                        color = Gray,
-                        style = Typography.bodySmall
-                    )
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable {
-                        navController.navigate("diary_list")
-                    }
-                ) {
-                    Text(
-                        text = "Go",
-                        color = Gray,
-                        style = Typography.bodyMedium
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Filled.ChevronRight,
-                        contentDescription = "Go to Diary",
-                        tint = Gray
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
         }
     }
 }
