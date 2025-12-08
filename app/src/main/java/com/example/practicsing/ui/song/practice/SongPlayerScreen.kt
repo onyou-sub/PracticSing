@@ -36,6 +36,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import com.example.practicsing.ui.song.practice.component.RecorderManager
+import com.example.practicsing.ui.song.practice.component.SongPracticeViewModelFactory
 
 @Composable
 fun SongPlayerScreen(
@@ -45,7 +46,9 @@ fun SongPlayerScreen(
 ) {
 
     val context = LocalContext.current
-    val viewModel: SongPracticeViewModel = viewModel()
+    val viewModel: SongPracticeViewModel = viewModel(
+        factory = SongPracticeViewModelFactory(repo)
+    )
 
     val song = remember {
         repo.getSongs().firstOrNull { it.id == songId }
@@ -197,6 +200,11 @@ fun SongPlayerScreen(
                                     val filePath = viewModel.stopRecording()
                                     isRecording = false
                                     println("record save this path: $filePath")
+                                    
+                                    // SAVE TO REPOSITORY
+                                    if (filePath != null) {
+                                        viewModel.saveRecord(song)
+                                    }
                                 }
                             },
                             modifier = Modifier
@@ -258,4 +266,3 @@ fun SongPlayerScreen(
 
 
 }
-

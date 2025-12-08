@@ -20,6 +20,7 @@ import com.example.practicsing.ui.my.SongArchiveScreen
 import com.example.practicsing.ui.song.practice.component.PracticeSuccessScreen
 import com.example.practicsing.ui.diary.DiaryWriteScreen
 import com.example.practicsing.ui.diary.DiaryEditScreen
+
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -100,11 +101,17 @@ fun AppNavHost(
         }
 
         composable(
-            route = "diary_edit/{id}/{title}/{content}",
+            route = "diary_edit/{id}?title={title}&content={content}",
             arguments = listOf(
                 navArgument("id") { type = NavType.StringType },
-                navArgument("title") { type = NavType.StringType },
-                navArgument("content") { type = NavType.StringType }
+                navArgument("title") { 
+                    type = NavType.StringType 
+                    defaultValue = ""
+                },
+                navArgument("content") { 
+                    type = NavType.StringType 
+                    defaultValue = ""
+                }
             )
         ) { backStackEntry ->
 

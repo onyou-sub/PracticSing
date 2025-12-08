@@ -102,7 +102,7 @@ fun DiaryListScreen(
                             val encodedContent = Uri.encode(selectedDiary.content)
 
                             navController.navigate(
-                                "diary_edit/${selectedDiary.id}/${encodedTitle}/${encodedContent}"
+                                "diary_edit/${selectedDiary.id}?title=${encodedTitle}&content=${encodedContent}"
                             )
                         }
                     )

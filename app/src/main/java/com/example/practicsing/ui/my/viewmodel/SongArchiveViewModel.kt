@@ -11,9 +11,16 @@ class SongArchiveViewModel(
     private val repo: SongRepository
 ) : ViewModel() {
 
-    // TODO: 실제로는 repo에서 PracticeRecord 목록 가져오도록 수정
-    private val _records = MutableStateFlow(samplePracticeRecords())
+    private val _records = MutableStateFlow<List<PracticeRecord>>(emptyList())
     val records = _records.asStateFlow()
+
+    init {
+        loadRecords()
+    }
+
+    fun loadRecords() {
+        _records.value = repo.getPracticeRecords()
+    }
 }
 
 class SongArchiveViewModelFactory(
@@ -27,22 +34,3 @@ class SongArchiveViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
-
-// 임시 샘플 데이터
-private fun samplePracticeRecords(): List<PracticeRecord> =
-    listOf(
-        PracticeRecord(
-            id = "rec1",
-            songId = "song_hypeboy",
-            songTitle = "Without You",
-            artist = "Emma Volka",
-            albumImageUrl = "https://picsum.photos/600/300",
-            recordingUrl = "",
-            durationText = "3:44",
-            recordedDate = "2024.03.04",
-            aiScore = 80,
-            aiStrengthComment = "Your pronunciation is smooth and stable.",
-            aiImprovementComment = "Try to emphasize the ending consonants more clearly."
-        )
-        // 필요하면 더 추가
-    )
