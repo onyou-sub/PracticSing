@@ -33,40 +33,21 @@ fun MyScreen(
 ) {
     val context = LocalContext.current
 
-    // SharedPreferences에서 userId 가져오기
+    // 로그인 유저 ID
     val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
     val savedUserId = remember { prefs.getString("userid", null) }
 
+    // Practice 상태 (오늘 했는지 / 연속 일수)
     var practicedToday by remember { mutableStateOf(false) }
     var streak by remember { mutableStateOf(1) }
 
+    // 유저 이름 / 연습 히스토리
     var userName by remember { mutableStateOf("") }
-
-    // 이 유저가 실제로 부른 기록들 (AiEvaluationResult)
     var history by remember { mutableStateOf<List<AiEvaluationResult>>(emptyList()) }
 
     val evaluationRepository = remember { EvaluationRepository() }
 
-    // 유저 정보 + 평가 기록 불러오기
-    LaunchedEffect(savedUserId) {
-        if (savedUserId != null) {
-            val firestore = FirebaseFirestore.getInstance()
-
-            // Users 컬렉션에서 유저 이름 가져오기
-            val userSnapshot = firestore
-                .collection("Users")
-                .document(savedUserId)
-                .get()
-                .await()
-
-            userName = userSnapshot.getString("Name") ?: ""
-
-            // 이 유저가 실제로 부른 노래들(평가 기록) 가져오기
-            history = evaluationRepository.getUserEvaluationHistory(savedUserId)
-        }
-    }
-
-    // 연습 여부 / 연속 일수
+    // 🔹 Firestore에서 유저 이름 + 평가 기록 불러오기
     LaunchedEffect(savedUserId) {
         if (savedUserId != null) {
             try {
@@ -82,11 +63,16 @@ fun MyScreen(
 
                 history = evaluationRepository.getUserEvaluationHistory(savedUserId)
             } catch (e: Exception) {
-                // 필요하면 Log 찍기
+                // TODO: 필요하면 Log.e 찍기
             }
         }
     }
 
+    // 🔹 PracticePrefs에서 오늘 연습 여부 & 연속 일수 불러오기
+    LaunchedEffect(Unit) {
+        practicedToday = PracticePrefs.hasPracticedToday(context)
+        streak = PracticePrefs.getCurrentDay(context)
+    }
 
     AppScreenContainer {
         Column(
@@ -113,9 +99,9 @@ fun MyScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // 프로필 카드 (favorite singer 제거)
+            // 프로필 카드
             ProfileCard(
-                userName = userName, // 더 이상 favorite singer 사용 X
+                userName = userName,
                 profileImageUrl = null,
                 onLogout = {
                     with(prefs.edit()) {
@@ -130,12 +116,7 @@ fun MyScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            LaunchedEffect(Unit) {
-                practicedToday = PracticePrefs.didPracticeToday(context)
-                streak = PracticePrefs.getCurrentDay(context)
-            }
-
-
+            // 🔹 오늘 연습 여부 + 연속 일수 보여주는 카드
             DailyPracticeCard(
                 dateLabel = "Today",
                 streakCount = streak,
@@ -197,7 +178,6 @@ fun MyScreen(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // 너무 많을 수 있으니 상위 3~5개만 노출
                     history.take(5).forEach { item ->
                         SongArchivePreviewCard(
                             title = item.songTitle,
@@ -209,13 +189,11 @@ fun MyScreen(
                         )
                     }
                 }
-
-
-
-
             }
+
             Spacer(Modifier.height(16.dp))
 
+            // Diary 섹션
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

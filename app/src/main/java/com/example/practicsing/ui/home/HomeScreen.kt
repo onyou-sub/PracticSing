@@ -1,173 +1,104 @@
 package com.example.practicsing.ui.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items // LazyRow의 items 확장 함수 사용을 위해 필수 Import
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.draw.clip
-import com.example.practicsing.navigation.Screen
-
-
-// ⭐ RecordVoiceOver 아이콘 사용을 위한 필수 Import
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.RecordVoiceOver
-
-import androidx.compose.ui.text.font.FontWeight
-// ⭐ viewModel() 함수 사용을 위한 필수 Import
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-
-// ===================================================
-// 테마 및 공통 컴포넌트 Import (프로젝트 구조: main.theme, ui.common 사용)
-import com.example.practicsing.main.theme.BasePink
+import com.example.practicsing.data.PracticePrefs
+import com.example.practicsing.data.model.AiEvaluationResult
+import com.example.practicsing.data.model.Song
 import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.MainText
-import com.example.practicsing.main.theme.PinkAccent
-import com.example.practicsing.main.theme.Gray
-import com.example.practicsing.main.theme.Typography // 정의된 커스텀 Typography 사용
-
-import com.example.practicsing.ui.common.TabButton
-import com.example.practicsing.ui.common.SongCard
-import com.example.practicsing.ui.common.HomeRankUi
-import com.example.practicsing.ui.common.HomeRankCard
-
-// 데이터 모델 및 ViewModel Import (클린 아키텍처 구조 가정)
-import com.example.practicsing.data.model.Song
+import com.example.practicsing.main.theme.Typography
+import com.example.practicsing.navigation.Screen
 import com.example.practicsing.presentation.home.HomeViewModel
-// ===================================================
-import coil.compose.AsyncImage
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.graphics.Color
-import com.example.practicsing.R
+import com.example.practicsing.ui.common.HomeRankCard
+import com.example.practicsing.ui.common.SongCard
+import com.example.practicsing.ui.common.TabButton
+
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = viewModel(), navController: NavController) {
-    // ViewModel의 상태를 수집 (StateFlow를 관찰)
+fun HomeScreen(
+    viewModel: HomeViewModel = viewModel(),
+    navController: NavController
+) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
+
+    // ✅ 오늘 연습 여부 / Day(연속 일수)
+    val hasPracticedToday = PracticePrefs.hasPracticedToday(context)
+    val currentDay = PracticePrefs.getCurrentDay(context) // 필요하면 DailyPracticeCard에 넘기기
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .verticalScroll(scrollState)
-            .background(DarkBackground)
+            .fillMaxSize()                 // ✅ 전체 화면 채우기
+            .background(DarkBackground)    // ✅ 먼저 배경 깔고
+            .verticalScroll(scrollState)   // 그 위에 스크롤
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // --- 1. Header ---
         Text(
-            "Home",
+            text = "Home",
             color = MainText,
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(horizontal = 4.dp),
-            style = Typography.headlineSmall // 24sp, Bold
+            style = Typography.headlineSmall
         )
+
         Spacer(modifier = Modifier.height(20.dp))
 
         // --- 2. Daily Practice Box ---
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .clip(RoundedCornerShape(20.dp)),
-            contentAlignment = Alignment.TopCenter
-        ){
-            AsyncImage(
-                model = R.drawable.home,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .matchParentSize()
-            )
+        DailyPracticeCard(
+            hasPracticedToday = hasPracticedToday,
+            onClickPractice = { navController.navigate(Screen.Practice.route) }
+        )
 
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xAAFF3AAE),
-                                Color(0xAAFF0088)
-                            )
-                        )
-                    )
-            )
-
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Spacer(modifier = Modifier.height(15.dp))
-                // ⭐ RecordVoiceOver 아이콘 사용
-                Icon(Icons.Filled.RecordVoiceOver, contentDescription = "Daily Practice", tint = MainText, modifier = Modifier.size(50.dp))
-                Spacer(modifier = Modifier.height(8.dp))
-
-
-                Text(
-                    text = "Elevate Your Voice Daily",
-                    color = MainText,
-                    style = Typography.headlineMedium
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-
-
-                Text(
-                    text = "Just for 3 minutes",
-                    color = Gray,
-                    style = Typography.labelSmall
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-
-                Button(
-                    onClick = {  navController.navigate(Screen.Practice.route) },
-                    colors = ButtonDefaults.buttonColors(containerColor = PinkAccent),
-                    shape = RoundedCornerShape(50),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-                ) {
-                    Text(
-                        "Click here to join",
-                        color = MainText,
-                        style = Typography.titleMedium
-                    )
-                }
-            }
-        }
         Spacer(modifier = Modifier.height(20.dp))
 
-
+        // --- 3. HOT SONGS ---
         Text(
             text = "HOT SONGS",
             color = MainText,
-            style = Typography.bodyLarge, // 16sp Medium (혹은 별도 정의된 스타일 사용)
+            style = Typography.bodyLarge,
             modifier = Modifier.align(Alignment.Start)
         )
         Spacer(modifier = Modifier.height(6.dp))
 
-        // 탭 버튼 (ViewModel 로직 사용)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
-        ){
-            TabButton("Weekly", uiState.selectedSongTab =="Weekly"){
+        ) {
+            TabButton(
+                text = "Weekly",
+                selected = uiState.selectedSongTab == "Weekly"
+            ) {
                 viewModel.selectSongTab("Weekly")
             }
             Spacer(modifier = Modifier.width(16.dp))
-            TabButton("Monthly", uiState.selectedSongTab =="Monthly"){
+            TabButton(
+                text = "Monthly",
+                selected = uiState.selectedSongTab == "Monthly"
+            ) {
                 viewModel.selectSongTab("Monthly")
             }
         }
+
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 노래 리스트 (상태에 따라 표시)
         SongList(
             songs = uiState.hotSongs,
             navController = navController
@@ -179,37 +110,38 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel(), navController: NavControl
         Text(
             text = "RANK",
             color = MainText,
-            style = Typography.bodyLarge, // 16sp Medium (혹은 별도 정의된 스타일 사용)
+            style = Typography.bodyLarge,
             modifier = Modifier.align(Alignment.Start)
         )
         Spacer(modifier = Modifier.height(6.dp))
 
-        // 랭크 탭 버튼 (ViewModel 로직 사용)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
-            TabButton("Weekly", uiState.selectedRankTab == "Weekly") {
+            TabButton(
+                text = "Weekly",
+                selected = uiState.selectedRankTab == "Weekly"
+            ) {
                 viewModel.selectRankTab("Weekly")
             }
             Spacer(modifier = Modifier.width(16.dp))
-            TabButton("Monthly", uiState.selectedRankTab == "Monthly") {
+            TabButton(
+                text = "Monthly",
+                selected = uiState.selectedRankTab == "Monthly"
+            ) {
                 viewModel.selectRankTab("Monthly")
             }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 랭크 리스트 (상태에 따라 표시)
-        RankList(ranks = uiState.ranking)
+        // 🔁 여기서 이제 AiEvaluationResult 리스트를 그대로 넘김
+        RankList(results = uiState.rankResults)
 
         Spacer(modifier = Modifier.height(20.dp))
     }
 }
-
-// -------------------------------------------------------------
-// * List Composable (LazyRow/Column 사용 시 Import 경로 유의)
-// -------------------------------------------------------------
 
 @Composable
 fun SongList(
@@ -223,15 +155,16 @@ fun SongList(
     }
 }
 
-
 @Composable
-fun RankList(ranks: List<HomeRankUi>) {
+fun RankList(results: List<AiEvaluationResult>) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) {
-        ranks.forEach { rank ->
-            HomeRankCard(rank)
+        results.forEachIndexed { index, result ->
+            HomeRankCard(
+                result = result,
+                rankNumber = index + 1   // 안 쓸 거면 HomeRankCard에서 파라미터 지워도 됨
+            )
         }
     }
 }
