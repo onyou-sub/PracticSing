@@ -92,47 +92,24 @@ fun SongPracticeScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(20.dp)
-        ){
-            Button(
-                onClick = {
-                    navController.navigate("SongPlay/$songId")
-                },
-                modifier = Modifier
-                    .height(80.dp)
-                    .width(150.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFF0088),
-                    contentColor = Color.White
-                )
+        Button(
+            onClick = {
+                navController.navigate("SongPlay/$songId")
+            },
+            modifier = Modifier
+                .height(70.dp)
+                .width(300.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFFF0088),
+                contentColor = Color.White
+            )
 
-            ) {
-                Text(
-                    "Full Song",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-
-            OutlinedButton(
-                onClick = {
-                    navController.navigate("PartPlay/$songId" )
-                          },
-                modifier = Modifier
-                    .height(80.dp)
-                    .width(150.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Black,
-                    contentColor = Color.White
-                )
-            ) {
-                Text(
-                    "Part only",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
+        ) {
+            Text(
+                "Full Song",
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
         Spacer(modifier = Modifier.height(25.dp))
 
