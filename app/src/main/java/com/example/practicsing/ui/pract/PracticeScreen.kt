@@ -17,7 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.google.gson.Gson
+
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -45,18 +45,12 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.*
 import com.example.practicsing.R
 import java.io.File
 import kotlin.math.abs
-
 import com.example.practicsing.data.PracticePrefs
-
 import com.example.practicsing.data.etri.runEtriRecording
-import com.google.gson.annotations.SerializedName
 
 import kotlinx.coroutines.*
 import kotlin.math.ceil
 
-// -----------------------------
-//  Practice Step Enum
-// -----------------------------
 enum class PracticeStep {
     Splash,
     BreathIntro,
@@ -67,19 +61,15 @@ enum class PracticeStep {
 
 }
 
-// -----------------------------
-//  Practice Screen Navigation
-// -----------------------------
 @Composable
 fun PracticeScreen(
     navController: NavController
-
 ) {
     val context = LocalContext.current
     var step by remember { mutableStateOf(PracticeStep.Splash) }
 
-    val currentDay = remember { PracticePrefs.getCurrentDay(context) }
-
+    // 현재 Day (연속 일수)
+    var currentDay by remember { mutableStateOf(PracticePrefs.getCurrentDay(context)) }
 
     when (step) {
 
@@ -88,34 +78,28 @@ fun PracticeScreen(
             onNext = { step = PracticeStep.BreathIntro }
         )
 
-
-
         PracticeStep.BreathIntro -> BreathPracticeScreen(
-            onFinish = {step = PracticeStep.TonePitch
+            onFinish = { step = PracticeStep.TonePitch }
+        )
 
-            }
-        )
         PracticeStep.TonePitch -> TonePitchScreen(
-            onNext = { step = PracticeStep.Pronunciation}
+            onNext = { step = PracticeStep.Pronunciation }
         )
-        PracticeStep.Pronunciation  -> PronunciationScreen(
+
+        PracticeStep.Pronunciation -> PronunciationScreen(
             onFinish = { step = PracticeStep.Finish }
         )
+
         PracticeStep.Finish -> FinishScreen(
             onFinish = {
+                // 🔹 오늘 연습 완료 + 연속 Day 갱신
+                val newDay = PracticePrefs.registerPracticeDone(context)
+                currentDay = newDay   // 다음에 Practice 들어올 때를 대비해서 UI state도 갱신
 
-                PracticePrefs.updateLastPracticeDate(context)
-
-
-                if (PracticePrefs.canIncreaseDay(context)) {
-                    PracticePrefs.increaseDay(context)
-                }
-
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(50)
-                    navController.navigate("home") {
-                        popUpTo("practice") { inclusive = true }
-                    }
+                // 🔹 바로 Home으로 네비게이트 (이미 LaunchedEffect 안에서 호출되기 때문에
+                //     여기서 따로 CoroutineScope 만들 필요 없음)
+                navController.navigate("home") {
+                    popUpTo("practice") { inclusive = true }
                 }
             }
         )
@@ -668,6 +652,22 @@ fun loadWavFromRaw(context: Context, resId: Int): FloatArray {
 
     return floats
 }
+
+// ETRI XML 응답에서 <score> 값만 추출
+fun extractScoreFromXml(xml: String): String? {
+    val startTag = "<score>"
+    val endTag = "</score>"
+
+    val start = xml.indexOf(startTag)
+    val end = xml.indexOf(endTag)
+
+    return if (start != -1 && end != -1 && end > start) {
+        xml.substring(start + startTag.length, end).trim()
+    } else {
+        null
+    }
+}
+
 @Composable
 fun PronunciationScreen(onFinish: () -> Unit) {
 
@@ -704,13 +704,13 @@ fun PronunciationScreen(onFinish: () -> Unit) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-
             Text(
                 text = "Say this:",
                 color = Color.Gray,
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -726,47 +726,46 @@ fun PronunciationScreen(onFinish: () -> Unit) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-
+            // 🔹 녹음 중에는 버튼 비활성화
             Button(
                 onClick = {
                     isRecording = true
                     CoroutineScope(Dispatchers.IO).launch {
                         val result = runEtriRecording(context, script = userScript.value)
-                        etriResult = result
 
-                        // Parse JSON to extract score
-                        try {
-                            val gson = Gson()
-                            val parsed = gson.fromJson(result, EtriResponse::class.java)
-                            score = parsed.returnObject?.score
-                        } catch (e: Exception) {
-                            score = null
+                        val parsedScore = extractScoreFromXml(result)
+
+                        withContext(Dispatchers.Main) {
+                            etriResult = result
+                            score = parsedScore
+                            isRecording = false
+                            Log.d("ETRI_COMPOSE", "ETRI Result: $result")
                         }
-
-                        isRecording = false
-                        Log.d("ETRI_COMPOSE", "ETRI Result: $result")
                     }
                 },
+                enabled = !isRecording,
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = PinkAccent)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = PinkAccent,
+                    disabledContainerColor = PinkAccent.copy(alpha = 0.4f)
+                )
             ) {
                 Text(if (isRecording) "Recording…" else "Record")
             }
 
             Spacer(modifier = Modifier.height(40.dp))
 
-
             etriResult?.let {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "ETRI Result Ready!",
-                        color = Color.Green,
+                        text = "Here is your Result",
+                        color = Color.LightGray,
                         fontSize = 18.sp
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Score: ${score ?: "N/A"}",
-                        color = Color.Yellow,
+                        text = "Score: ${score ?: "Unadequate. Please Try Again"}",
+                        color = Color.Magenta,
                         fontSize = 20.sp
                     )
                     Spacer(modifier = Modifier.height(20.dp))
@@ -777,25 +776,9 @@ fun PronunciationScreen(onFinish: () -> Unit) {
                         colors = ButtonDefaults.buttonColors(containerColor = PinkAccent)
                     ) {
                         Text("Finish")
-
                     }
                 }
             }
         }
     }
 }
-
-// ------------------------
-// Data class for parsing
-// ------------------------
-data class EtriResponse(
-    @SerializedName("request_id") val requestId: String?,
-    @SerializedName("result") val result: Int?,
-    @SerializedName("return_type") val returnType: String?,
-    @SerializedName("return_object") val returnObject: ReturnObject?
-)
-
-data class ReturnObject(
-    @SerializedName("recognized") val recognized: String?,
-    @SerializedName("score") val score: String?
-)
