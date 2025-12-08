@@ -8,13 +8,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.practicsing.navigation.Screen
+import com.example.practicsing.data.model.AiEvaluationResult
 import com.example.practicsing.data.model.Song
-import com.example.practicsing.data.model.LeaderboardEntry
+import com.example.practicsing.data.repository.EvaluationRepository
 import com.example.practicsing.data.repository.SongRepositoryImpl
-import com.example.practicsing.domain.usecase.GetLeaderboardUseCase
 import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.MainText
 import com.example.practicsing.main.theme.PinkAccent
@@ -25,10 +25,11 @@ import com.example.practicsing.ui.common.RoundedBackButton
 fun SongDetailScreen(
     navController: NavController,
     songId: String,
-    repo: SongRepositoryImpl = SongRepositoryImpl()
+    songRepo: SongRepositoryImpl = SongRepositoryImpl(),
+    evalRepo: EvaluationRepository = EvaluationRepository()
 ) {
-    // 곡 정보
-    val song: Song? = remember { repo.getSongs().firstOrNull { it.id == songId } }
+    // ✅ 곡 정보 조회
+    val song: Song? = remember { songRepo.getSongs().firstOrNull { it.id == songId } }
 
     if (song == null) {
         Box(
@@ -42,11 +43,11 @@ fun SongDetailScreen(
         return
     }
 
-    // 리더보드 데이터 (UseCase 사용)
-    val leaderboard: List<LeaderboardEntry> by remember {
-        mutableStateOf(
-            GetLeaderboardUseCase(repo)(song.id)
-        )
+    // ✅ 이 곡에 대한 Evaluation 기반 리더보드
+    var leaderboard by remember { mutableStateOf<List<AiEvaluationResult>>(emptyList()) }
+
+    LaunchedEffect(song.id) {
+        leaderboard = evalRepo.getSongLeaderboard(song.id, limit = 20)
     }
 
     val scrollState = rememberScrollState()
@@ -57,7 +58,6 @@ fun SongDetailScreen(
             Button(
                 onClick = {
                     navController.navigate("SongPractice/${song.id}")
-
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -65,21 +65,23 @@ fun SongDetailScreen(
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = PinkAccent)
             ) {
-                Text("Start", color = MainText, style = Typography.titleMedium)
+                Text("Start", color = Color.White, style = Typography.titleMedium)
             }
         }
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxSize()
+                .background(DarkBackground)
+                .padding(innerPadding)
         ) {
-            // 메인 컨텐츠 (스크롤)
+            // 🔹 전체 스크롤 영역
             Column(
                 modifier = Modifier
+                    .fillMaxSize()
                     .verticalScroll(scrollState)
             ) {
-                // 상단 요약 카드
+                // 상단: 앨범 이미지 딤 + 곡 정보 카드
                 SongDetailContent(song = song)
 
                 Spacer(Modifier.height(8.dp))
@@ -97,13 +99,14 @@ fun SongDetailScreen(
                     )
                     Spacer(Modifier.height(12.dp))
 
-                    LeaderboardList(entries = leaderboard)
+                    // 🔹 아까 만든 SongLeaderboardList 사용
+                    SongLeaderboardList(results = leaderboard)
                 }
 
-                Spacer(Modifier.height(80.dp)) // bottomBar와 살짝 간격
+                Spacer(Modifier.height(80.dp)) // bottomBar와 간격
             }
 
-            // 좌상단 동그라미 Back 버튼
+            // 좌상단 둥근 Back 버튼
             RoundedBackButton(
                 modifier = Modifier
                     .align(Alignment.TopStart)

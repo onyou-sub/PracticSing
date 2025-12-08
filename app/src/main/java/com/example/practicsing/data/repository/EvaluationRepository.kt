@@ -74,4 +74,26 @@ class EvaluationRepository {
             emptyList()
         }
     }
+
+    suspend fun getSongLeaderboard(
+        songId: String,
+        limit: Int = 20
+    ): List<AiEvaluationResult> {
+        return try {
+            val snapshot = firestore.collection("Evaluations")
+                .whereEqualTo("songId", songId)
+                .orderBy("score", Query.Direction.DESCENDING)
+                .limit(limit.toLong())
+                .get()
+                .await()
+
+            snapshot.documents.mapNotNull { doc ->
+                doc.toObject(AiEvaluationResult::class.java)
+                    ?.copy(id = doc.id)
+            }
+        } catch (e: Exception) {
+            Log.e("EvaluationRepository", "getSongLeaderboard error", e)
+            emptyList()
+        }
+    }
 }
