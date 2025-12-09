@@ -144,8 +144,6 @@ app/
 
 ## 🖼 **App Screenshots (Preview)**
 
-*(You can replace these with your actual screenshots later)*
-
 <table>
   <tr>
     <td align="center">
@@ -172,8 +170,6 @@ app/
 ---
 
 ## 🧪 **Demo Video**
-
-*(You can add a YouTube link here later)*
 
 <p align="center">
   <img src="https://placehold.co/480x270/000/FFF?text=Demo+Video+Thumbnail"/>
