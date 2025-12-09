@@ -1,177 +1,218 @@
-# PracticSing 🎤
+# 🎤 **PracticSing – AI-powered K-pop Vocal Training App**
 
-> “Practice your voice like you practice your instrument.”
+**PracticSing** is a mobile app that helps users improve their vocal skills through
+daily guided exercises, real-time pitch detection, and AI-powered pronunciation evaluation.
 
-**PracticSing** is a mobile app that helps users practice K-pop style singing in a structured way –  
-from daily vocal warm-ups to real song practice and AI-based pronunciation feedback.
+> Our goal is to make vocal practice more accessible, fun, and measurable —
+> so anyone can train like a K-pop artist anytime, anywhere.
 
----
-
-## ✨ Main Features
-
-### 1. Daily Practice Flow
-Guided 3-step routine you can finish in a few minutes:
-
-1. **Breath & Focus**  
-   - Simple inhale–hold–exhale cycle UI  
-   - Timer-based guidance for diaphragmatic breathing
-
-2. **Tone & Pitch**  
-   - Target notes (A / C / E) practice  
-   - Real-time pitch detection and visual feedback bar  
-   - Supports both microphone input and test audio
-
-3. **K-pronunciation**  
-   - Record a short Korean sentence  
-   - Send to ETRI API and display the returned score  
-   - “Finish / Next” flow is always available so the user is not stuck even if analysis fails
-
-Daily completion is synced to the user profile and used for streak tracking.
+* 🎯 **Target users:** K-pop fans, vocal trainees, and anyone who wants structured voice practice
+* 📱 **Platform:** Android (Jetpack Compose)
+* 🛠 **Tech:** Kotlin · Firebase · ETRI API · ExoPlayer · Compose
+* 📆 **Development period:** 2025 March ~ June
 
 ---
 
-### 2. Song Practice
+## 👥 **Team Members**
 
-- **Song List**  
-  - Filter, search, and browse songs by category / level.
-- **Song Detail**  
-  - Album artwork, title, artist, etc.  
-  - “Start” button to move to the song practice screen.
-- **Song Player**  
-  - Plays guide audio and records user singing.  
-  - Local recording is saved as a `PracticeRecord` via `SongRepository`.  
-  - Recent recordings are reused in the archive & evaluation screens.
-
----
-
-### 3. AI Evaluation & Leaderboard
-
-- **AiEvaluationScreen**  
-  - Sends recorded file to the backend / evaluation pipeline.  
-  - Stores `AiEvaluationResult` to Firestore.
-- **Leaderboard**  
-  - Per-song ranking based on AI score.  
-  - Uses Firestore composite index (`songId` + `score`) for efficient querying.
-- **Song Archive Preview**  
-  - On My Page, shows the last few evaluated songs with thumbnail + date.  
-  - “See all” opens the full Song Archive screen.
-
----
-
-### 4. My Page
-
-- **Profile Card**  
-  - Shows user name (loaded from Firestore `Users/{userId}`).
-- **Daily Practice Card**  
-  - Shows streak (number of consecutive days practiced).  
-  - Uses `PracticeRepository` to load whether user practiced today and current streak.
-- **Song Archive Section**  
-  - Card with “Song Archive / The songs I’ve tried”.  
-  - Preview list of recent `AiEvaluationResult` items.  
-  - “See all” navigates to `Screen.SongArchive`.
-- **Diary & Logout**  
-  - “My Diary” navigation.  
-  - Logout row at the bottom, opening a custom `PracticeSingModal` for confirmation,  
-    then removing `userid` from SharedPreferences and navigating back to Login.
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/yousrchive">
+        <img src="https://github.com/yousrchive.png" width="100" style="border-radius: 50%" /><br/>
+        <strong>yousrchive (Zoey Lee)</strong>
+      </a><br/>
+      Frontend Lead · Android UI/UX · Firebase Integration
+    </td>
+    <td align="center">
+      <a href="https://github.com/onyou-sub">
+        <img src="https://github.com/onyou-sub.png" width="100" style="border-radius: 50%" /><br/>
+        <strong>onyou-sub</strong>
+      </a><br/>
+      Android Architecture · Practice Flow · Audio Processing
+    </td>
+    <td align="center">
+      <a href="https://github.com/Tree-Collector">
+        <img src="https://github.com/Tree-Collector.png" width="100" style="border-radius: 50%" /><br/>
+        <strong>Tree-Collector</strong>
+      </a><br/>
+      Repository Design · Recording Engine · Playback & Archive
+    </td>
+  </tr>
+</table>
 
 ---
 
-## 🏗 Tech Stack
+## 🎯 **Project Overview**
 
-- **Language:** Kotlin
-- **UI:** Jetpack Compose (Material 3)
-- **Navigation:** `NavHost`, custom `AppNavHost`, bottom navigation
-- **Media:**
-  - `androidx.media3` ExoPlayer for playback (`ArchivePlayerDialog` etc.)
-  - Custom pitch detection for tone practice
-- **Backend & Cloud:**
-  - Firebase Authentication
-  - Firebase Firestore (Users, Evaluations, Practice records)
-  - Firebase Storage (recording files – if configured)
-  - Composite indexes for leaderboard queries
-- **External APIs:**
-  - ETRI Speech API for pronunciation scoring
-  - Android YouTube Player for embedded videos in practice flow
+PracticSing provides a structured daily vocal training experience through:
 
----
+### **1️⃣ Daily Practice Program**
 
-## 📂 Project Structure (핵심만)
+A 3-step guided routine:
 
-```text
-app/src/main/java/com/example/practicsing/
-├─ data/
-│  ├─ etri/                # ETRI recording & client
-│  ├─ model/               # Song, PracticeRecord, AiEvaluationResult, etc.
-│  ├─ repository/          # SongRepository, EvaluationRepository, PracticeRepository
-│  └─ source/              # Sample data
-├─ navigation/
-│  ├─ AppNavHost.kt
-│  └─ Screen.kt
-├─ ui/
-│  ├─ auth/                # Login, Register
-│  ├─ common/              # AppScreenContainer, PracticeSingModal, etc.
-│  ├─ my/                  # MyScreen, SongArchiveScreen, Diary screens
-│  ├─ song/                # Song list, song detail, song practice
-│  └─ pract/               # Daily practice (Breath, TonePitch, Pronunciation)
-└─ main/theme/             # Colors, Typography, Dark theme
-````
+| Step                   | Feature                   | Description                                     |
+| ---------------------- | ------------------------- | ----------------------------------------------- |
+| **1. Breath & Focus**  | Breathing cycles          | Diaphragm warm-up with inhale/hold/exhale timer |
+| **2. Tone & Pitch**    | Real-time pitch detection | Detects A/C/E notes and visualizes accuracy     |
+| **3. K-pronunciation** | AI scoring                | ETRI speech API evaluates pronunciation         |
+
+Users receive streak tracking, daily progress updates, and a smooth practice → finish flow.
 
 ---
 
-## 🚀 Getting Started
+## 🎵 **Song Training & Archive**
 
-### 1. Requirements
+### ✔ Song List & Detail
 
-* Android Studio Ladybug or newer
-* JDK 17
-* Android SDK 24+
-* A Firebase project (Firestore + Auth enabled)
-* ETRI API key (for pronunciation step)
+* Browse songs by category / difficulty
+* View album art, metadata, practice entry points
 
-### 2. Clone the repository
+### ✔ Song Player
+
+* Guide audio playback (ExoPlayer)
+* User vocals recording
+* Saves practice records locally + to Firebase
+
+### ✔ AI Evaluation
+
+* Sends recordings for scoring (`AiEvaluationResult`)
+* Displays insights, score history
+* Leaderboard per song (Firestore composite index)
+
+### ✔ Song Archive
+
+* Shows previously practiced songs
+* Thumbnail, date, and quick playback
+* Full archive available in My Page
+
+---
+
+## 👤 **My Page Features**
+
+* Profile info (Firestore `Users/{userId}`)
+* Daily practice streak
+* Song archive preview
+* Diary access
+* Logout modal with smooth UX transition
+
+---
+
+## 🧱 **Tech Stack**
+
+| Layer               | Technology                                     |
+| ------------------- | ---------------------------------------------- |
+| **UI**              | Jetpack Compose (Material 3)                   |
+| **Audio**           | Custom PitchDetector · ExoPlayer · WAV parsing |
+| **Backend (Cloud)** | Firebase Auth · Firestore · Storage            |
+| **AI Processing**   | ETRI Speech API for pronunciation scoring      |
+| **Navigation**      | Compose Navigation + custom `AppNavHost`       |
+
+---
+
+## 🏗 **Architecture Overview**
+
+```
+app/
+ ├── ui/
+ │   ├── pract/           # Daily practice (Breath, Pitch, Pronunciation)
+ │   ├── song/            # Song list, details, player
+ │   ├── my/              # MyPage, archive, diary
+ │   └── common/          # Reusable components & modal UI
+ │
+ ├── data/
+ │   ├── model/           # Song, PracticeRecord, AiEvaluationResult
+ │   ├── repository/      # SongRepository, EvaluationRepository, PracticeRepository
+ │   └── etri/            # ETRI Recorder & API client
+ │
+ ├── navigation/          # Screen routes + NavHost
+ └── main/theme/          # Typography, colors, styles
+```
+
+---
+
+## 🚀 **Flow Summary**
+
+1. **User logs in** → ID stored in SharedPreferences
+2. **Daily Practice** → Breath → Pitch → Pronunciation
+3. **Recording analyzed** via ETRI API
+4. **Evaluation saved** to Firestore (`Evaluations` collection)
+5. **Song archive & leaderboard** refreshed
+6. **My Page** displays streaks + history
+
+---
+
+## 🖼 **App Screenshots (Preview)**
+
+*(You can replace these with your actual screenshots later)*
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://placehold.co/300x600/000/FFF?text=Daily+Practice" width="250"/><br/>
+      <b>Daily Practice</b>
+    </td>
+    <td align="center">
+      <img src="https://placehold.co/300x600/000/FFF?text=Pitch+Training" width="250"/><br/>
+      <b>Pitch Training</b>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://placehold.co/300x600/000/FFF?text=Pronunciation+AI" width="250"/><br/>
+      <b>Pronunciation AI</b>
+    </td>
+    <td align="center">
+      <img src="https://placehold.co/300x600/000/FFF?text=My+Page" width="250"/><br/>
+      <b>My Page</b>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 🧪 **Demo Video**
+
+*(You can add a YouTube link here later)*
+
+<p align="center">
+  <img src="https://placehold.co/480x270/000/FFF?text=Demo+Video+Thumbnail"/>
+</p>
+
+---
+
+## 🔧 **Installation & Run**
+
+### 1. Clone
 
 ```bash
 git clone https://github.com/onyou-sub/PracticSing.git
 cd PracticSing
 ```
 
-### 3. Firebase setup
+### 2. Add Firebase config
 
-1. Create a Firebase project.
+```
+app/google-services.json
+```
 
-2. Enable **Email/Password** Authentication (or your preferred providers).
+### 3. Run in Android Studio
 
-3. Enable **Cloud Firestore** and set security rules for dev/testing.
-
-4. Download `google-services.json` and place it in:
-
-   ```text
-   app/google-services.json
-   ```
-
-5. Make sure `applicationId` in `build.gradle.kts` matches the package registered in Firebase.
-
-### 4. ETRI & Other Secrets
-
-Create a local `local.properties` or use BuildConfig to inject:
-
-* `ETRI_API_KEY`
-* Any backend endpoints used for AI evaluation, if applicable.
-
-(We intentionally do not commit secrets in this repo.)
-
-### 5. Run
-
-* Open the project in Android Studio.
-* Sync Gradle.
-* Run on an emulator or physical device.
+* Select device/emulator
+* Sync Gradle
+* Press ▶ Run
 
 ---
 
-## 👥 Contributors
+## 📌 **Future Plans**
 
-> Ordered alphabetically by GitHub handle.
+* More pitch training levels
+* User-customized vocal exercises
+* Full AI scoring for singing (not just pronunciation)
+* Social features (challenge, duet)
 
-* [@onyou-sub](https://github.com/onyou-sub) – Android app architecture, navigation, daily practice flow, AI evaluation integration.
-* [@Tree-Collector](https://github.com/Tree-Collector) – Data & repository design, recording manager, archive & playback logic.
-* [@yousrchive](https://github.com/yousrchive) – UX/UI flows (My Page, Song Archive, Daily Practice), Firebase wiring, copy & product design.
+---
+
+## 📄 License
+
+MIT License
