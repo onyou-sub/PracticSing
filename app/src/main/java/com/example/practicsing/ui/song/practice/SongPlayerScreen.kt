@@ -16,12 +16,8 @@ import com.example.practicsing.data.repository.SongRepositoryImpl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.common.MediaItem
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.media3.common.Player
 import com.example.practicsing.ui.common.RoundedBackButton
 import com.example.practicsing.ui.song.practice.component.AudioPlayerBar
@@ -35,7 +31,14 @@ import com.example.practicsing.ui.song.practice.component.SongPracticeViewModel
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import com.example.practicsing.ui.song.practice.component.RecorderManager
+import com.example.practicsing.ui.common.PracticeSingModal
+import com.example.practicsing.data.model.PracticeRecord
+import com.example.practicsing.navigation.Screen
+
+import com.google.gson.Gson
+import android.net.Uri
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun SongPlayerScreen(
@@ -47,14 +50,11 @@ fun SongPlayerScreen(
     val context = LocalContext.current
     val viewModel: SongPracticeViewModel = viewModel()
 
-    val song = remember {
-        repo.getSongs().firstOrNull { it.id == songId }
-    }
-    if (song == null) {
+    // 🎵 노래 정보 가져오기
+    val song = remember { repo.getSongs().firstOrNull { it.id == songId } }
+    if (song == null) return
 
-        return
-    }
-    // 나머지 노래들도 raw 파일에 넣기 ??
+    // raw 파일 ID 로드
     val resId = remember(key1 = song) {
         context.resources.getIdentifier(
             song.filename,
@@ -62,13 +62,12 @@ fun SongPlayerScreen(
             context.packageName
         )
     }
-    // 플레이어 생성
+
+    // 🎵 ExoPlayer
     val player = remember {
         ExoPlayer.Builder(context).build().apply {
             setMediaItem(
-                MediaItem.fromUri(
-                    "android.resource://${context.packageName}/$resId"
-                )
+                MediaItem.fromUri("android.resource://${context.packageName}/$resId")
             )
             prepare()
         }
@@ -78,7 +77,21 @@ fun SongPlayerScreen(
     var isPlaying by remember { mutableStateOf(false) }
     var duration by rememberSaveable { mutableStateOf(0L) }
     var currentPosition by rememberSaveable { mutableStateOf(0L) }
+
+    // 🎤 녹음 관련
     var isRecording by remember { mutableStateOf(false) }
+    var recordedFilePath by remember { mutableStateOf<String?>(null) }
+    var recordedDurationMs by remember { mutableStateOf<Long?>(null) }
+
+    // 모달 상태
+    var showModal by remember { mutableStateOf(false) }
+    var modalTitle by remember { mutableStateOf("") }
+    var modalSubtitle by remember { mutableStateOf<String?>(null) }
+    var modalEmoji by remember { mutableStateOf("🎤") }
+    var modalButtonText by remember { mutableStateOf("확인") }
+    var modalOnClick: (() -> Unit)? by remember { mutableStateOf(null) }
+
+    // 플레이어 상태 업데이트
     LaunchedEffect(player) {
         player.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
@@ -86,7 +99,6 @@ fun SongPlayerScreen(
                     duration = player.duration
                 }
             }
-
             override fun onIsPlayingChanged(isPlayingNow: Boolean) {
                 isPlaying = isPlayingNow
             }
@@ -99,50 +111,41 @@ fun SongPlayerScreen(
     }
 
     DisposableEffect(Unit) {
-        val listener = object : Player.Listener {
-            override fun onIsPlayingChanged(isPlayingNow: Boolean) {
-                isPlaying = isPlayingNow
-            }
-        }
-
-        player.addListener(listener)
-
-        onDispose {
-            player.removeListener(listener)
-            player.release()
-        }
+        onDispose { player.release() }
     }
 
     fun togglePlay() {
         if (player.isPlaying) player.pause() else player.play()
     }
 
+    fun showError(title: String, subtitle: String) {
+        modalTitle = title
+        modalSubtitle = subtitle
+        modalEmoji = "⚠️"
+        modalButtonText = "Check"
+        modalOnClick = { showModal = false }
+        showModal = true
+    }
+
+    // 🎶 UI
     Box(modifier = Modifier.fillMaxSize()) {
+
         RoundedBackButton(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(start = 16.dp, top = 16.dp),
             onClick = { navController.popBackStack() }
         )
-    }
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF430024),
-                            Color(0xFF000000)
-                        )
+                        colors = listOf(Color(0xFF430024), Color.Black)
                     )
                 )
         )
-
 
         Column(
             modifier = Modifier
@@ -151,13 +154,9 @@ fun SongPlayerScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-
-            song?.let {
-                SongHeader(song = it)
-            } ?: Text("Song Not Found", color = Color.White)
+            SongHeader(song = song)
 
             Spacer(modifier = Modifier.height(20.dp))
-
 
             LyricTabSelector(
                 selected = selectedTab,
@@ -166,9 +165,7 @@ fun SongPlayerScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-
             when (selectedTab) {
-
                 "Main" -> {
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -176,7 +173,8 @@ fun SongPlayerScreen(
                         AudioPlayerBar(
                             duration = duration,
                             currentPosition = currentPosition,
-                            onSeek = { newPos -> player.seekTo(newPos) })
+                            onSeek = { newPos -> player.seekTo(newPos) }
+                        )
 
                         Spacer(modifier = Modifier.height(20.dp))
 
@@ -184,19 +182,20 @@ fun SongPlayerScreen(
                             isPlaying = isPlaying,
                             onClick = { togglePlay() }
                         )
+
                         Spacer(Modifier.height(40.dp))
 
-                        Spacer(Modifier.height(12.dp))
-
+                        // 🎤 녹음 버튼
                         Button(
                             onClick = {
                                 if (!isRecording) {
                                     viewModel.startRecording(context)
                                     isRecording = true
                                 } else {
-                                    val filePath = viewModel.stopRecording()
+                                    val (path, recordedMs) = viewModel.stopRecording()
+                                    recordedFilePath = path
+                                    recordedDurationMs = recordedMs
                                     isRecording = false
-                                    println("record save this path: $filePath")
                                 }
                             },
                             modifier = Modifier
@@ -208,14 +207,51 @@ fun SongPlayerScreen(
                                 contentColor = Color.White
                             )
                         ) {
-                            Text(if (isRecording) "finish" else "start recording")
+                            Text(if (isRecording) "Finish Recording" else "Start Recording")
                         }
 
                         Spacer(modifier = Modifier.height(200.dp))
 
+                        // ⭐ FINISH BUTTON ⭐
                         Button(
                             onClick = {
-                                navController.navigate("practice_success")
+
+                                val durationSec = (recordedDurationMs ?: 0L) / 1000
+
+                                if (recordedFilePath == null) {
+                                    showError("No recordings.", "Record more than 10 seconds.")
+                                    return@Button
+                                }
+
+                                if (durationSec < 10) {
+                                    showError("녹음 시간이 너무 짧아요", "10초 이상 녹음해야 저장됩니다.")
+                                    return@Button
+                                }
+
+                                val dateText = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault())
+                                    .format(Date())
+
+                                val record = PracticeRecord(
+                                    id = "",
+                                    songId = song.id,
+                                    songTitle = song.title,
+                                    artist = song.artist,
+                                    albumImageUrl = song.imageUrl,
+                                    recordingUrl = recordedFilePath!!,
+                                    durationText = "${durationSec}초",
+                                    practicedAtMillis = System.currentTimeMillis(),
+                                    practicedDateText = dateText,
+                                    aiScore = (75..95).random(),
+                                    aiStrengthComment = "Stable tone with nice clarity.",
+                                    aiImprovementComment = "Try improving breath control."
+                                )
+
+                                // ⭐ JSON 변환 + URI 인코딩 ⭐
+                                val recordJson = Uri.encode(Gson().toJson(record))
+
+                                navController.navigate(
+                                    Screen.AiEvaluation.createRoute(recordJson)
+                                )
                             },
                             modifier = Modifier
                                 .height(50.dp)
@@ -225,37 +261,25 @@ fun SongPlayerScreen(
                                 containerColor = Color(0xFFFF0088),
                                 contentColor = Color.White
                             )
-
                         ) {
-                            Text(
-                                "Finish",
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
+                            Text("Finish", style = MaterialTheme.typography.bodyMedium)
                         }
-
-
-
                     }
                 }
 
-                "Kor" -> {
-                    LyricsScreen(song = song, "Kor")
-                }
-
-                "Eng" -> {
-
-                    LyricsScreen(song = song, "Eng")
-
-                }
+                "Kor" -> LyricsScreen(song = song, "Kor")
+                "Eng" -> LyricsScreen(song = song, "Eng")
             }
-
-
         }
-
     }
 
-
-
-
+    PracticeSingModal(
+        visible = showModal,
+        emoji = modalEmoji,
+        title = modalTitle,
+        subtitle = modalSubtitle,
+        buttonText = modalButtonText,
+        onDismissRequest = { showModal = false },
+        onButtonClick = { modalOnClick?.invoke() }
+    )
 }
-

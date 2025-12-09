@@ -48,6 +48,10 @@ fun SongDetailScreen(
 
     LaunchedEffect(song.id) {
         leaderboard = evalRepo.getSongLeaderboard(song.id, limit = 20)
+        println("🔥 Loaded leaderboard count = ${leaderboard.size}")
+        leaderboard.forEach {
+            println("🔥 user=${it.userId}, score=${it.score}")
+        }
     }
 
     val scrollState = rememberScrollState()

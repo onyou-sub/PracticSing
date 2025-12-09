@@ -96,4 +96,48 @@ class EvaluationRepository {
             emptyList()
         }
     }
+    suspend fun getParticipantsBySong(): Map<String, Int> {
+        return try {
+            val snapshot = firestore.collection("Evaluations")
+                .get()
+                .await()
+
+            val results = snapshot.documents.mapNotNull { doc ->
+                doc.toObject(AiEvaluationResult::class.java)
+            }
+
+            results
+                .groupBy { it.songId }
+                .mapValues { entry ->
+                    entry.value
+                        .map { it.userId }
+                        .distinct()
+                        .size
+                }
+        } catch (e: Exception) {
+            Log.e("EvaluationRepository", "getParticipantsBySong error", e)
+            emptyMap()
+        }
+    }
+
+    suspend fun saveEvaluation(result: AiEvaluationResult): Boolean {
+        return try {
+            val docId = if (result.id.isBlank()) {
+                firestore.collection("Evaluations").document().id
+            } else result.id
+
+            val finalResult = result.copy(id = docId)
+
+            firestore.collection("Evaluations")
+                .document(docId)
+                .set(finalResult)
+                .await()
+
+            true
+        } catch (e: Exception) {
+            Log.e("EvaluationRepository", "saveEvaluation error", e)
+            false
+        }
+    }
+
 }
