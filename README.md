@@ -22,7 +22,7 @@ daily guided exercises, real-time pitch detection, and AI-powered pronunciation 
         <img src="https://github.com/yousrchive.png" width="100" style="border-radius: 50%" /><br/>
         <strong>yousrchive (Zoey Lee)</strong>
       </a><br/>
-      Frontend Lead · Android UI/UX · Firebase Integration
+      Android UI/UX · Firebase Integration
     </td>
     <td align="center">
       <a href="https://github.com/onyou-sub">
