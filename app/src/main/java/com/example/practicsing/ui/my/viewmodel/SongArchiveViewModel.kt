@@ -34,3 +34,22 @@ class SongArchiveViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+
+// 임시 샘플 데이터
+private fun samplePracticeRecords(): List<PracticeRecord> =
+    listOf(
+        PracticeRecord(
+            id = "rec1",
+            songId = "song_hypeboy",
+            songTitle = "Without You",
+            artist = "Emma Volka",
+            albumImageUrl = "https://picsum.photos/600/300",
+            recordingUrl = "",
+            durationText = "3:44",
+            practicedDateText = "2024.03.04",
+            aiScore = 80,
+            aiStrengthComment = "Your pronunciation is smooth and stable.",
+            aiImprovementComment = "Try to emphasize the ending consonants more clearly."
+        )
+        // 필요하면 더 추가
+    )

@@ -22,7 +22,7 @@ sealed class Screen(val route: String) {
     }
 
     object SongPractice : Screen("song_practice/{songId}") {
-        fun createRoute(songId: Long) = "song_practice/$songId"
+        fun createRoute(songId: String) = "song_practice/$songId"
     }
 
     object DailyPractice : Screen("daily_practice/{streakCount}") {
@@ -31,7 +31,8 @@ sealed class Screen(val route: String) {
 
     object SongArchive : Screen("song_archive")
 
-    object AiEvaluation : Screen("ai_evaluation/{recordId}") {
-        fun createRoute(recordId: String) = "ai_evaluation/$recordId"
+    object AiEvaluation : Screen("ai_evaluation/{record}") {
+        fun createRoute(recordJson: String) = "ai_evaluation/$recordJson"
     }
+
 }

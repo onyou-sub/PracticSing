@@ -1,12 +1,8 @@
 package com.example.practicsing.ui.common
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -19,6 +15,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.practicsing.main.theme.Gray
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.MainText
 import com.example.practicsing.main.theme.PinkAccent
 import com.example.practicsing.main.theme.Typography
@@ -28,37 +29,82 @@ fun PracticeSingModal(
     visible: Boolean,
     emoji: String,
     title: String,
-    subtitle: String,
+    subtitle: String? = null,
     buttonText: String,
     onDismissRequest: () -> Unit,
-    onButtonClick: () -> Unit
+    onButtonClick: () -> Unit = onDismissRequest,
 ) {
-    if (visible) {
-        Dialog(onDismissRequest = onDismissRequest) {
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = Color(0xFF1E1E1E) // Dark background for the dialog
+    if (!visible) return
+
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true // 밖 클릭 시에 모달 닫히도록
+        )
+    ) {
+        Surface(
+            shape = RoundedCornerShape(24.dp),
+            color = DarkBackground, // 카드 배경
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 32.dp, vertical = 28.dp)
+                    .widthIn(min = 260.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
+
+                // 이모지 동그란 배경
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(
+                            color = androidx.compose.ui.graphics.Color(0xFF2C2C2C),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = emoji, fontSize = Typography.headlineMedium.fontSize)
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // 텍스트
+                Text(
+                    text = title,
+                    style = Typography.bodyLarge,
+                    color = MainText,
+                    textAlign = TextAlign.Center
+                )
+
+                if (subtitle != null) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = subtitle,
+                        style = Typography.bodyMedium,
+                        color = MainText.copy(alpha = 0.7f),
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // 버튼
+                Button(
+                    onClick = onButtonClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                        .height(52.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PinkAccent,
+                        contentColor = androidx.compose.ui.graphics.Color.White
+                    )
                 ) {
-                    Text(text = emoji, style = Typography.headlineLarge)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = title, style = Typography.titleMedium, color = MainText)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = subtitle, style = Typography.bodyMedium, color = Gray)
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Button(
-                        onClick = onButtonClick,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = PinkAccent)
-                    ) {
-                        Text(text = buttonText, color = Color.White)
-                    }
+                    Text(
+                        text = buttonText,
+                        style = Typography.labelLarge
+                    )
                 }
             }
         }

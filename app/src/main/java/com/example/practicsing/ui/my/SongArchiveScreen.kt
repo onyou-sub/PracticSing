@@ -80,7 +80,7 @@ fun SongArchiveScreen(
                 items(records) { record ->
                     SongArchivePreviewCard(
                         title = record.songTitle,
-                        date = record.recordedDate,
+                        date = record.practicedDateText,
                         imageUrl = record.albumImageUrl,
                         onClick = {
                             selectedRecord = record

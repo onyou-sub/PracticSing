@@ -20,6 +20,10 @@ import com.example.practicsing.ui.my.SongArchiveScreen
 import com.example.practicsing.ui.song.practice.component.PracticeSuccessScreen
 import com.example.practicsing.ui.diary.DiaryWriteScreen
 import com.example.practicsing.ui.diary.DiaryEditScreen
+import com.example.practicsing.ui.eval.AiEvaluationScreen
+import com.example.practicsing.data.model.PracticeRecord
+
+import com.google.gson.Gson
 
 @Composable
 fun AppNavHost(
@@ -101,7 +105,22 @@ fun AppNavHost(
         }
 
         composable(
-            route = "diary_edit/{id}?title={title}&content={content}",
+            route = "ai_evaluation/{record}",
+            arguments = listOf(
+                navArgument("record") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val json = backStackEntry.arguments?.getString("record") ?: ""
+            val record = Gson().fromJson(json, PracticeRecord::class.java)
+
+            AiEvaluationScreen(
+                navController = navController,
+                record = record
+            )
+        }
+
+        composable(
+            route = "diary_edit/{id}/{title}/{content}",
             arguments = listOf(
                 navArgument("id") { type = NavType.StringType },
                 navArgument("title") { 
