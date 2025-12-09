@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.practicsing.data.repository.EvaluationRepository
 import com.example.practicsing.data.repository.SongRepositoryImpl
 import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.MainText
@@ -27,7 +28,7 @@ import com.example.practicsing.ui.song.components.SongSearchBar
 fun SongScreen(
     navController: NavController,
     vm: SongViewModel = viewModel(
-        factory = SongViewModelFactory(SongRepositoryImpl())
+        factory = SongViewModelFactory(SongRepositoryImpl(), EvaluationRepository())
     )
 ) {
     val songs by vm.songs.collectAsState()

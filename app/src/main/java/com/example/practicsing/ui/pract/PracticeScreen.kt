@@ -34,20 +34,13 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import kotlinx.coroutines.delay
-import androidx.compose.ui.res.painterResource
-import androidx.compose.foundation.Image
 //영상 가져오기 위한 import
-import androidx.compose.ui.viewinterop.AndroidView
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.*
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.*
 import androidx.activity.ComponentActivity
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.*
 import com.example.practicsing.R
-import java.io.File
 import kotlin.math.abs
-import com.example.practicsing.data.PracticePrefs
-import com.example.practicsing.data.etri.runEtriRecording
-
+import com.example.practicsing.data.etri.EtriRecorderClient
+import org.json.JSONObject
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.*
 import kotlin.math.ceil
 
@@ -63,13 +56,19 @@ enum class PracticeStep {
 
 @Composable
 fun PracticeScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: PracticeViewModel = viewModel(factory = PracticeViewModelFactory())
 ) {
     val context = LocalContext.current
     var step by remember { mutableStateOf(PracticeStep.Splash) }
 
-    // 현재 Day (연속 일수)
-    var currentDay by remember { mutableStateOf(PracticePrefs.getCurrentDay(context)) }
+    // 현재 Day (연속 일수) - Observe from ViewModel
+    val currentDay by viewModel.currentDay.collectAsState()
+
+    // Initialize user data on launch
+    LaunchedEffect(Unit) {
+        viewModel.loadUserData(context)
+    }
 
     when (step) {
 
@@ -92,14 +91,12 @@ fun PracticeScreen(
 
         PracticeStep.Finish -> FinishScreen(
             onFinish = {
-                // 🔹 오늘 연습 완료 + 연속 Day 갱신
-                val newDay = PracticePrefs.registerPracticeDone(context)
-                currentDay = newDay   // 다음에 Practice 들어올 때를 대비해서 UI state도 갱신
-
-                // 🔹 바로 Home으로 네비게이트 (이미 LaunchedEffect 안에서 호출되기 때문에
-                //     여기서 따로 CoroutineScope 만들 필요 없음)
-                navController.navigate("home") {
-                    popUpTo("practice") { inclusive = true }
+                // 🔹 오늘 연습 완료 + 연속 Day 갱신 (via ViewModel which updates Firebase)
+                viewModel.finishPractice { newDay ->
+                    // 🔹 바로 Home으로 네비게이트
+                    navController.navigate("home") {
+                        popUpTo("practice") { inclusive = true }
+                    }
                 }
             }
         )
@@ -109,11 +106,6 @@ fun PracticeScreen(
 
 @Composable
 fun StartScreen(day: Int, onNext: () -> Unit) {
-
-    LaunchedEffect(true) {
-        delay(2000)
-        onNext()
-    }
 
     Box(
         modifier = Modifier
@@ -653,16 +645,30 @@ fun loadWavFromRaw(context: Context, resId: Int): FloatArray {
     return floats
 }
 
-// ETRI XML 응답에서 <score> 값만 추출
-fun extractScoreFromXml(xml: String): String? {
+// Extract score from response, supporting both JSON and XML
+fun extractScore(response: String): String? {
+    // Try parsing as JSON first
+    try {
+        val jsonObject = JSONObject(response)
+        if (jsonObject.has("return_object")) {
+            val returnObject = jsonObject.getJSONObject("return_object")
+            if (returnObject.has("score")) {
+                return returnObject.getString("score")
+            }
+        }
+    } catch (e: Exception) {
+        // Not a valid JSON or missing keys, fall through to XML check
+    }
+
+    // Fallback: extract from XML tags
     val startTag = "<score>"
     val endTag = "</score>"
 
-    val start = xml.indexOf(startTag)
-    val end = xml.indexOf(endTag)
+    val start = response.indexOf(startTag)
+    val end = response.indexOf(endTag)
 
     return if (start != -1 && end != -1 && end > start) {
-        xml.substring(start + startTag.length, end).trim()
+        response.substring(start + startTag.length, end).trim()
     } else {
         null
     }
@@ -674,10 +680,12 @@ fun PronunciationScreen(onFinish: () -> Unit) {
     val context = LocalContext.current
 
     var isRecording by remember { mutableStateOf(false) }
+    var isAnalyzing by remember { mutableStateOf(false) }
     var etriResult by remember { mutableStateOf<String?>(null) }
     var score by remember { mutableStateOf<String?>(null) }
 
-    val userScript = remember { mutableStateOf("잘했어요 계속하세요") }
+    val userScript = remember { mutableStateOf("예") }
+    val recorderClient = remember { EtriRecorderClient() }
 
     Column(
         modifier = Modifier
@@ -726,31 +734,43 @@ fun PronunciationScreen(onFinish: () -> Unit) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // 🔹 녹음 중에는 버튼 비활성화
             Button(
                 onClick = {
-                    isRecording = true
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val result = runEtriRecording(context, script = userScript.value)
+                    if (isRecording) {
+                        // Stop recording and analyze
+                        isRecording = false
+                        isAnalyzing = true
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val result = recorderClient.stopAndAnalyze(script = userScript.value)
+                            val parsedScore = extractScore(result)
 
-                        val parsedScore = extractScoreFromXml(result)
-
-                        withContext(Dispatchers.Main) {
-                            etriResult = result
-                            score = parsedScore
-                            isRecording = false
-                            Log.d("ETRI_COMPOSE", "ETRI Result: $result")
+                            withContext(Dispatchers.Main) {
+                                etriResult = result
+                                score = parsedScore
+                                isAnalyzing = false
+                                Log.d("ETRI_COMPOSE", "ETRI Result: $result")
+                            }
                         }
+                    } else {
+                        // Start recording
+                        isRecording = true
+                        etriResult = null
+                        score = null
+                        recorderClient.startRecording()
                     }
                 },
-                enabled = !isRecording,
+                enabled = !isAnalyzing,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PinkAccent,
+                    containerColor = if (isRecording) Color.Red else PinkAccent,
                     disabledContainerColor = PinkAccent.copy(alpha = 0.4f)
                 )
             ) {
-                Text(if (isRecording) "Recording…" else "Record")
+                 Text(
+                    if (isAnalyzing) "Analyzing..." 
+                    else if (isRecording) "Stop Recording" 
+                    else "Start Recording"
+                )
             }
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -763,8 +783,12 @@ fun PronunciationScreen(onFinish: () -> Unit) {
                         fontSize = 18.sp
                     )
                     Spacer(modifier = Modifier.height(8.dp))
+
+                    val scoreVal = score?.toFloatOrNull()
+                    val displayText = if (scoreVal != null && scoreVal >= 4.0f) "Score: $score" else "Unadequate. Please Try Again"
+
                     Text(
-                        text = "Score: ${score ?: "Unadequate. Please Try Again"}",
+                        text = displayText,
                         color = Color.Magenta,
                         fontSize = 20.sp
                     )

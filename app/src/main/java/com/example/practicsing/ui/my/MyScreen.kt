@@ -13,7 +13,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import com.example.practicsing.data.PracticePrefs
 import com.example.practicsing.data.model.AiEvaluationResult
@@ -21,7 +24,6 @@ import com.example.practicsing.data.repository.EvaluationRepository
 import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.Gray
 import com.example.practicsing.main.theme.MainText
-import com.example.practicsing.main.theme.PinkAccent
 import com.example.practicsing.main.theme.Typography
 import com.example.practicsing.navigation.Screen
 import com.example.practicsing.ui.common.AppScreenContainer
@@ -37,6 +39,7 @@ fun MyScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     val prefs = remember {
         context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
@@ -49,12 +52,28 @@ fun MyScreen(
     var userName by remember { mutableStateOf("") }
     var history by remember { mutableStateOf<List<AiEvaluationResult>>(emptyList()) }
 
+    // This trigger forces a reload whenever the screen is resumed (e.g. back navigation)
+    var refreshTrigger by remember { mutableStateOf(0) }
+
     val evaluationRepository = remember { EvaluationRepository() }
 
     // Logout 모달 표시 여부
     var showLogoutDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(savedUserId) {
+    // Listen for lifecycle events to refresh data when screen comes into view
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                refreshTrigger++
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    LaunchedEffect(savedUserId, refreshTrigger) {
         if (savedUserId != null) {
             try {
                 val firestore = FirebaseFirestore.getInstance()
@@ -71,7 +90,7 @@ fun MyScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(refreshTrigger) {
         practicedToday = PracticePrefs.hasPracticedToday(context)
         streak = PracticePrefs.getCurrentDay(context)
     }

@@ -1,6 +1,5 @@
 package com.example.practicsing.data.etri
 
-import android.content.Context
 import android.media.*
 import android.util.Base64
 import android.util.Log
@@ -10,78 +9,74 @@ import kotlinx.coroutines.withContext
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.concurrent.atomic.AtomicBoolean
 
+class EtriRecorderClient {
+    private val sampleRate = 16000
+    private var audioRecord: AudioRecord? = null
+    private val isRecording = AtomicBoolean(false)
+    private val speechData = ByteArrayOutputStream()
+    private val TAG = "ETRI_CLIENT"
 
-suspend fun runEtriRecording(
-    context: Context,
-    script: String = "잘했어요 계속하세요"
-): String = withContext(Dispatchers.IO) {
+    fun startRecording() {
+        if (isRecording.get()) return
 
-    val TAG = "ETRI_COMPOSE"
-    val sampleRate = 16000
-    val recordingSeconds = 5
-    val maxSamples = sampleRate * recordingSeconds
-    val speechData = ByteArray(maxSamples * 2)
-    var lenSpeech = 0
-
-    val accessKey = "edd9bbfb-5938-454e-a4f8-99930ea98bc7" // Use your valid key
-
-    try {
-        // ---------- RECORD AUDIO ----------
         val bufferSize = AudioRecord.getMinBufferSize(
             sampleRate,
             AudioFormat.CHANNEL_IN_MONO,
             AudioFormat.ENCODING_PCM_16BIT
         )
 
-        val audio = AudioRecord(
-            MediaRecorder.AudioSource.MIC,
-            sampleRate,
-            AudioFormat.CHANNEL_IN_MONO,
-            AudioFormat.ENCODING_PCM_16BIT,
-            bufferSize
-        )
+        try {
+            audioRecord = AudioRecord(
+                MediaRecorder.AudioSource.MIC,
+                sampleRate,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT,
+                bufferSize
+            )
 
-        if (audio.state != AudioRecord.STATE_INITIALIZED) {
-            Log.e(TAG, "Microphone init failed")
-            return@withContext "Microphone init failed"
-        }
-
-        val tempBuffer = ShortArray(bufferSize)
-        audio.startRecording()
-        Log.i(TAG, "Recording $recordingSeconds seconds…")
-
-        while (lenSpeech < maxSamples) {
-            val read = audio.read(tempBuffer, 0, bufferSize)
-            for (i in 0 until read) {
-                if (lenSpeech >= maxSamples) break
-                speechData[lenSpeech * 2] = (tempBuffer[i].toInt() and 0xFF).toByte()
-                speechData[lenSpeech * 2 + 1] = ((tempBuffer[i].toInt() shr 8) and 0xFF).toByte()
-                lenSpeech++
+            if (audioRecord?.state != AudioRecord.STATE_INITIALIZED) {
+                Log.e(TAG, "Microphone init failed")
+                return
             }
+
+            audioRecord?.startRecording()
+            isRecording.set(true)
+            speechData.reset()
+
+            Thread {
+                val tempBuffer = ByteArray(bufferSize)
+                while (isRecording.get()) {
+                    val read = audioRecord?.read(tempBuffer, 0, bufferSize) ?: 0
+                    if (read > 0) {
+                        speechData.write(tempBuffer, 0, read)
+                    }
+                }
+            }.start()
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Recording error: ${e.message}")
+            isRecording.set(false)
         }
-
-        audio.stop()
-        audio.release()
-        Log.i(TAG, "Recording finished. Encoding to WAV…")
-
-    } catch (e: Exception) {
-        Log.e(TAG, "Recording error: ${e.message}")
-        return@withContext "Recording error: ${e.message}"
     }
 
-    // ---------- PCM TO WAV ----------
-    val wavData = pcmToWav(
-        pcmData = speechData.copyOfRange(0, lenSpeech * 2),
-        sampleRate = sampleRate,
-        channels = 1,
-        bitsPerSample = 16
-    )
+    suspend fun stopAndAnalyze(script: String): String = withContext(Dispatchers.IO) {
+        isRecording.set(false)
+        try {
+            audioRecord?.stop()
+            audioRecord?.release()
+        } catch (e: Exception) {
+            Log.e(TAG, "Stop error: ${e.message}")
+        }
+        audioRecord = null
 
-    // ---------- SEND TO ETRI ----------
-    val result = sendEtriRequest(wavData, accessKey, script)
-    Log.d(TAG, "ETRI Result: $result")
-    return@withContext result
+        val pcmData = speechData.toByteArray()
+        val wavData = pcmToWav(pcmData, sampleRate)
+
+        val accessKey = "edd9bbfb-5938-454e-a4f8-99930ea98bc7"
+        sendEtriRequest(wavData, accessKey, script)
+    }
 }
 
 // PCM -> WAV encoder
@@ -166,7 +161,7 @@ fun sendEtriRequest(wavData: ByteArray, accessKey: String, script: String): Stri
         "access_key" to accessKey,
         "argument" to mapOf(
             "language_code" to "korean",
-            "script" to script,  // <- add this
+            "script" to script,
             "audio" to audioBase64
         )
     )

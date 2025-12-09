@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.practicsing.data.repository.EvaluationRepository
 import com.example.practicsing.data.repository.SongRepositoryImpl
 import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.MainText
@@ -30,7 +31,7 @@ import androidx.compose.material3.TextFieldDefaults
 fun SearchScreen(
     navController: NavController,
     vm: SearchViewModel = viewModel(
-        factory = SearchViewModelFactory(SongRepositoryImpl())
+        factory = SearchViewModelFactory(SongRepositoryImpl(), EvaluationRepository())
     )
 ) {
     val query by vm.query.collectAsState()
