@@ -9,7 +9,7 @@ daily guided exercises, real-time pitch detection, and AI-powered pronunciation 
 * 🎯 **Target users:** K-pop fans, vocal trainees, and anyone who wants structured voice practice
 * 📱 **Platform:** Android (Jetpack Compose)
 * 🛠 **Tech:** Kotlin · Firebase · ETRI API · ExoPlayer · Compose
-* 📆 **Development period:** 2025 March ~ June
+* 📆 **Development period:** 2025 October ~ December 9th
 
 ---
 
