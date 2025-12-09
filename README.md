@@ -86,6 +86,8 @@ Users receive streak tracking, daily progress updates, and a smooth practice →
 * Thumbnail, date, and quick playback
 * Full archive available in My Page
 
+<table> <tr> <td align="center"> <img src="https://github.com/onyou-sub/PracticSing/blob/master/README/Home.png?raw=true" width="260"/><br/> <b>Home</b> </td> <td align="center"> <img src="https://github.com/onyou-sub/PracticSing/blob/master/README/SongList.png?raw=true" width="260"/><br/> <b>Song List</b> </td> <td align="center"> <img src="https://github.com/onyou-sub/PracticSing/blob/master/README/SongDetailScreen.png?raw=true" width="260"/><br/> <b>Song Detail</b> </td> </tr> <tr> <td align="center"> <img src="https://github.com/onyou-sub/PracticSing/blob/master/README/DailyPractice2.png?raw=true" width="260"/><br/> <b>Daily Practice</b> </td> <td align="center"> <img src="https://github.com/onyou-sub/PracticSing/blob/master/README/AiEvaluation.png?raw=true" width="260"/><br/> <b>AI Evaluation</b> </td> <td align="center"> <img src="https://github.com/onyou-sub/PracticSing/blob/master/README/Mypage.png?raw=true" width="260"/><br/> <b>My Page</b> </td> </tr> <tr> <td align="center"> <img src="https://github.com/onyou-sub/PracticSing/blob/master/README/MyDiary.png?raw=true" width="260"/><br/> <b>My Diary</b> </td> </tr> </table>
+
 ---
 
 ## 👤 **My Page Features**
