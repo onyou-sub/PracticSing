@@ -122,9 +122,9 @@ class EvaluationRepository {
 
     suspend fun saveEvaluation(result: AiEvaluationResult): Boolean {
         return try {
-            val docId = if (result.id.isBlank()) {
+            val docId = result.id.ifBlank {
                 firestore.collection("Evaluations").document().id
-            } else result.id
+            }
 
             val finalResult = result.copy(id = docId)
 

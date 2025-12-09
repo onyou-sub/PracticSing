@@ -488,7 +488,7 @@ fun TonePitchScreen(
     val noteFrequencies = remember { mapOf("A" to 440.0f, "C" to 261.63f, "E" to 329.63f) }
     val targetNotes = remember { noteFrequencies.keys.toList() }
     var currentNoteIndex by remember { mutableStateOf(0) }
-    var countdown by remember { mutableStateOf(5) }
+    var countdown by remember { mutableStateOf(3) }
     var practiceActive by remember { mutableStateOf(false) }
     var useTestFile by remember { mutableStateOf(false) }
 
@@ -566,7 +566,7 @@ fun TonePitchScreen(
                         pitchDetector.stop()
                         practiceActive = false
                         currentNoteIndex = 0
-                        countdown = 5
+                        countdown = 3
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = PinkAccent),
                     modifier = Modifier.fillMaxWidth()

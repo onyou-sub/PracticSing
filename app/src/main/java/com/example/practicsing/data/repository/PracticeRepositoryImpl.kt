@@ -26,6 +26,23 @@ class PracticeRepositoryImpl : PracticeRepository {
         }
     }
 
+    override suspend fun hasPracticedToday(userId: String): Boolean {
+        if (userId.isEmpty()) return false
+
+        return try {
+            val snapshot = usersCollection.document(userId).get().await()
+            val lastDay = snapshot.getLong("lastPracticeEpochDay") ?: -1L
+
+            val millisPerDay = 24L * 60L * 60L * 1000L
+            val today = System.currentTimeMillis() / millisPerDay
+
+            lastDay == today
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
     // Registers practice for today, updates Firebase, and returns the new streak
     override suspend fun registerPracticeDone(userId: String): Int {
         if (userId.isEmpty()) return 1

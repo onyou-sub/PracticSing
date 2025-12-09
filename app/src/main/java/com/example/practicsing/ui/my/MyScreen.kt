@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
-import com.example.practicsing.data.PracticePrefs
 import com.example.practicsing.data.model.AiEvaluationResult
 import com.example.practicsing.data.repository.EvaluationRepository
+import com.example.practicsing.data.repository.PracticeRepositoryImpl
 import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.Gray
 import com.example.practicsing.main.theme.MainText
@@ -56,6 +56,7 @@ fun MyScreen(
     var refreshTrigger by remember { mutableStateOf(0) }
 
     val evaluationRepository = remember { EvaluationRepository() }
+    val practiceRepository = remember { PracticeRepositoryImpl() }
 
     // Logout 모달 표시 여부
     var showLogoutDialog by remember { mutableStateOf(false) }
@@ -76,23 +77,26 @@ fun MyScreen(
     LaunchedEffect(savedUserId, refreshTrigger) {
         if (savedUserId != null) {
             try {
+                // Fetch User Name
                 val firestore = FirebaseFirestore.getInstance()
-
                 val userSnapshot = firestore
                     .collection("Users")
                     .document(savedUserId)
                     .get()
                     .await()
-
                 userName = userSnapshot.getString("Name") ?: ""
-                history = evaluationRepository.getUserEvaluationHistory(savedUserId)
-            } catch (_: Exception) {}
-        }
-    }
 
-    LaunchedEffect(refreshTrigger) {
-        practicedToday = PracticePrefs.hasPracticedToday(context)
-        streak = PracticePrefs.getCurrentDay(context)
+                // Fetch History
+                history = evaluationRepository.getUserEvaluationHistory(savedUserId)
+
+                // Fetch Practice Info (Streak & Today Status) from Firebase
+                streak = practiceRepository.getCurrentStreak(savedUserId)
+                practicedToday = practiceRepository.hasPracticedToday(savedUserId)
+
+            } catch (_: Exception) {
+                // Ignore errors or handle gracefully
+            }
+        }
     }
 
     AppScreenContainer {
@@ -130,70 +134,57 @@ fun MyScreen(
                 practicedToday = practicedToday
             )
 
-            Spacer(Modifier.height(28.dp))
+            if (history.isNotEmpty()) {
+                Spacer(Modifier.height(28.dp))
 
-            // ---------- Song Archive (div 박스) ----------
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                color = DarkBackground.copy(alpha = 0.7f)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 20.dp)
+                // ---------- Song Archive (div 박스) ----------
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    color = DarkBackground.copy(alpha = 0.7f)
                 ) {
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 20.dp)
                     ) {
-                        Column {
-                            Text(
-                                text = "Song Archive",
-                                color = MainText,
-                                style = Typography.bodyLarge
-                            )
-                            Text(
-                                text = "The songs I've tried",
-                                color = Gray,
-                                style = Typography.bodySmall
-                            )
-                        }
 
                         Row(
-                            modifier = Modifier.clickable {
-                                navController.navigate(Screen.SongArchive.route)
-                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("See all", color = Gray, style = Typography.bodyMedium)
-                            Spacer(Modifier.width(4.dp))
-                            Icon(
-                                imageVector = Icons.Filled.ChevronRight,
-                                contentDescription = null,
-                                tint = Gray
-                            )
-                        }
-                    }
+                            Column {
+                                Text(
+                                    text = "Song Archive",
+                                    color = MainText,
+                                    style = Typography.bodyLarge
+                                )
+                                Text(
+                                    text = "The songs I've tried",
+                                    color = Gray,
+                                    style = Typography.bodySmall
+                                )
+                            }
 
-                    Spacer(Modifier.height(16.dp))
-
-                    if (history.isEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(80.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "No Songs Tried Yet.",
-                                color = Gray,
-                                style = Typography.bodySmall
-                            )
+                            Row(
+                                modifier = Modifier.clickable {
+                                    navController.navigate(Screen.SongArchive.route)
+                                },
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("See all", color = Gray, style = Typography.bodyMedium)
+                                Spacer(Modifier.width(4.dp))
+                                Icon(
+                                    imageVector = Icons.Filled.ChevronRight,
+                                    contentDescription = null,
+                                    tint = Gray
+                                )
+                            }
                         }
-                    } else {
+
+                        Spacer(Modifier.height(16.dp))
+
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             history.take(3).forEach { item ->
                                 SongArchivePreviewCard(

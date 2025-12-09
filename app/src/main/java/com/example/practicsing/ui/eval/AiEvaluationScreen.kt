@@ -1,5 +1,6 @@
 package com.example.practicsing.ui.eval
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -13,12 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.practicsing.data.model.PracticeRecord
 import com.example.practicsing.data.model.toAiEvaluationResult
 import com.example.practicsing.data.repository.EvaluationRepository
+import com.example.practicsing.data.repository.SongRepositoryImpl
 import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.Gray
 import com.example.practicsing.main.theme.MainText
@@ -26,7 +29,6 @@ import com.example.practicsing.main.theme.PinkAccent
 import com.example.practicsing.main.theme.Typography
 import com.example.practicsing.navigation.Screen
 import com.example.practicsing.ui.common.AppScreenContainer
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 @Composable
@@ -35,10 +37,15 @@ fun AiEvaluationScreen(
     record: PracticeRecord
 ) {
     val repo = remember { EvaluationRepository() }
+    val songRepo = remember { SongRepositoryImpl() }
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     // 🔥 로그인 유저 ID
-    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    val prefs = remember {
+        context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+    }
+    val userId = remember { prefs.getString("userid", "") ?: "" }
 
     AppScreenContainer(
         modifier = Modifier
@@ -184,6 +191,7 @@ fun AiEvaluationScreen(
                     coroutineScope.launch {
                         val result = record.toAiEvaluationResult(userId)
                         repo.saveEvaluation(result)
+                        songRepo.savePracticeRecord(record)
                         navController.navigate(Screen.Home.route)
                     }
                 },
