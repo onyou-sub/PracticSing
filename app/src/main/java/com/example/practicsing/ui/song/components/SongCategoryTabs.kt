@@ -23,11 +23,10 @@ fun SongCategoryTabs(
 ) {
     val fixedTabs = listOf("HOT", "RECENT")
 
-    // 🔹 Genre Enum 기반으로 스크롤 영역 구성 (POP은 제외)
+    // 🔹 Genre Enum 기반으로 스크롤 영역 구성
     val scrollTabs: List<String> =
         Genre.values()
-            .filter { it != Genre.POP }      // Figma 상 POP은 탭에 없어서 제외
-            .map { it.name }                 // "Ballad", "Acoustic", "Dance", "OST", "Etc"
+            .map { it.name }                 // "POP", "Ballad", "Acoustic", "Dance", "OST", "Etc"
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -63,7 +62,7 @@ fun SongCategoryTabs(
             scrollTabs.forEach { genreName ->
                 val isSelected = selected == genreName
                 Text(
-                    text = genreName,  // "Ballad", "Acoustic" 등
+                    text = genreName,  // "POP", "Ballad", "Acoustic" 등
                     color = if (isSelected) PinkAccent else MainText,
                     style = Typography.bodyMedium,
                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
