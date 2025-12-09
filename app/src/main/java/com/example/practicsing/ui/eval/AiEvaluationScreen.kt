@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.example.practicsing.ui.eval
 
 import androidx.compose.foundation.background
@@ -9,16 +7,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.practicsing.data.model.PracticeRecord
+import com.example.practicsing.data.model.toAiEvaluationResult
+import com.example.practicsing.data.repository.EvaluationRepository
 import com.example.practicsing.main.theme.DarkBackground
 import com.example.practicsing.main.theme.Gray
 import com.example.practicsing.main.theme.MainText
@@ -34,21 +26,29 @@ import com.example.practicsing.main.theme.PinkAccent
 import com.example.practicsing.main.theme.Typography
 import com.example.practicsing.navigation.Screen
 import com.example.practicsing.ui.common.AppScreenContainer
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 @Composable
 fun AiEvaluationScreen(
     navController: NavController,
     record: PracticeRecord
 ) {
+    val repo = remember { EvaluationRepository() }
+    val coroutineScope = rememberCoroutineScope()
+
+    // 🔥 로그인 유저 ID
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
     AppScreenContainer(
         modifier = Modifier
             .fillMaxSize()
             .background(DarkBackground)
     ) {
-        // 상태바와 겹치지 않게
+
         Spacer(Modifier.height(8.dp))
 
-        // 상단 바 : Back / Title / Home
+        // 상단 바
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -64,11 +64,7 @@ fun AiEvaluationScreen(
                 )
             }
 
-            Text(
-                text = "AI Evaluation",
-                color = MainText,
-                style = Typography.bodyLarge
-            )
+            Text("AI Evaluation", color = MainText, style = Typography.bodyLarge)
 
             IconButton(onClick = { navController.navigate(Screen.Home.route) }) {
                 Icon(
@@ -82,34 +78,27 @@ fun AiEvaluationScreen(
         // 메인 카드
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF181818)
-            ),
+            colors = CardDefaults.cardColors(Color(0xFF181818)),
             shape = RoundedCornerShape(20.dp)
         ) {
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(20.dp)
             ) {
-                // 곡 정보 + 점수
+
+                // 곡 정보 & 점수
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
                     Column {
-                        Text(
-                            text = record.songTitle,
-                            color = MainText,
-                            style = Typography.titleLarge
-                        )
+                        Text(record.songTitle, color = MainText, style = Typography.titleLarge)
                         Spacer(Modifier.height(4.dp))
-                        Text(
-                            text = record.artist,
-                            color = MainText,
-                            style = Typography.bodySmall
-                        )
+                        Text(record.artist, color = MainText, style = Typography.bodySmall)
                     }
 
                     Box(
@@ -119,9 +108,8 @@ fun AiEvaluationScreen(
                             .background(PinkAccent),
                         contentAlignment = Alignment.Center
                     ) {
-                        val scoreText = record.aiScore?.toString() ?: "--"
                         Text(
-                            text = scoreText,
+                            text = record.aiScore?.toString() ?: "--",
                             color = MainText,
                             style = Typography.titleLarge
                         )
@@ -131,9 +119,8 @@ fun AiEvaluationScreen(
                 Spacer(Modifier.height(16.dp))
 
                 // 녹음 정보
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+
                     AsyncImage(
                         model = record.albumImageUrl,
                         contentDescription = null,
@@ -141,94 +128,70 @@ fun AiEvaluationScreen(
                             .size(56.dp)
                             .clip(CircleShape)
                     )
+
                     Spacer(Modifier.width(12.dp))
+
                     Column {
-                        Text(
-                            text = "Recording",
-                            color = MainText,
-                            style = Typography.bodyMedium
-                        )
-                        Text(
-                            text = record.durationText,
-                            color = Gray,
-                            style = Typography.labelSmall
-                        )
+                        Text("Recording", color = MainText, style = Typography.bodyMedium)
+                        Text(record.durationText, color = Gray, style = Typography.labelSmall)
                     }
                 }
 
                 Spacer(Modifier.height(24.dp))
 
-                // Strength
-                Text(
-                    text = "Strength",
-                    color = MainText,
-                    style = Typography.bodyMedium
-                )
+                Text("Strength", color = MainText, style = Typography.bodyMedium)
                 Spacer(Modifier.height(8.dp))
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(80.dp)
                         .clip(RoundedCornerShape(12.dp))
                         .background(Color(0xFF202020))
-                        .padding(12.dp),
-                    contentAlignment = Alignment.TopStart
+                        .padding(12.dp)
                 ) {
-                    Text(
-                        text = record.aiStrengthComment
-                            ?: "Your pronunciation feedback will appear here.",
-                        color = MainText,
-                        style = Typography.bodySmall
-                    )
+                    Text(record.aiStrengthComment ?: "", color = MainText, style = Typography.bodySmall)
                 }
 
                 Spacer(Modifier.height(16.dp))
 
-                // Improvement
-                Text(
-                    text = "Improvement",
-                    color = MainText,
-                    style = Typography.bodyMedium
-                )
+                Text("Improvement", color = MainText, style = Typography.bodyMedium)
                 Spacer(Modifier.height(8.dp))
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(80.dp)
                         .clip(RoundedCornerShape(12.dp))
                         .background(Color(0xFF202020))
-                        .padding(12.dp),
-                    contentAlignment = Alignment.TopStart
+                        .padding(12.dp)
                 ) {
-                    Text(
-                        text = record.aiImprovementComment
-                            ?: "Suggestions for improvement will appear here.",
-                        color = MainText,
-                        style = Typography.bodySmall
-                    )
+                    Text(record.aiImprovementComment ?: "", color = MainText, style = Typography.bodySmall)
                 }
             }
         }
 
         Spacer(Modifier.height(24.dp))
 
-        // 아래 버튼 영역
+        // SAVE 버튼
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             Button(
                 onClick = {
-                    // TODO: 기록 저장
+                    coroutineScope.launch {
+                        val result = record.toAiEvaluationResult(userId)
+                        repo.saveEvaluation(result)
+                        navController.navigate(Screen.Home.route)
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PinkAccent,
-                    contentColor = MainText
-                ),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(PinkAccent, MainText)
             ) {
                 Text("SAVE", style = Typography.titleMedium)
             }
@@ -237,15 +200,10 @@ fun AiEvaluationScreen(
 
             TextButton(
                 onClick = {
-                    // TODO: 다시 부르기 -> 연습 화면
-                    // navController.navigate(Screen.SongPractice.createRoute(record.songId))
+                    navController.navigate(Screen.SongPractice.createRoute(record.songId))
                 }
             ) {
-                Text(
-                    text = "Retry",
-                    color = MainText,
-                    style = Typography.bodyMedium
-                )
+                Text("Retry", color = MainText)
             }
         }
     }

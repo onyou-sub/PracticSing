@@ -1,7 +1,7 @@
-package com.example.practicsing.data.model
-
 // 기본 값이 없어서 앱이 무한 로딩하는 문제
 // 기본 데이터 넣어두기
+
+package com.example.practicsing.data.model
 
 data class AiEvaluationResult(
     val id: String = "",

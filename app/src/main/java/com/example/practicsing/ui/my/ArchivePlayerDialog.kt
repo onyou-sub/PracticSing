@@ -79,7 +79,7 @@ fun ArchivePlayerDialog(
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = record.recordedDate,
+                    text = record.practicedDateText,
                     color = MainText,
                     style = Typography.bodySmall
                 )
