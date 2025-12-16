@@ -684,7 +684,7 @@ fun PronunciationScreen(onFinish: () -> Unit) {
     var etriResult by remember { mutableStateOf<String?>(null) }
     var score by remember { mutableStateOf<String?>(null) }
 
-    val userScript = remember { mutableStateOf("예") }
+    val userScript = remember { mutableStateOf("안녕하세요. 잘하셨어요.") }
     val recorderClient = remember { EtriRecorderClient() }
 
     Column(
